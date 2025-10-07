@@ -1249,50 +1249,86 @@ function App() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          {/* Table View Toggle - Epic Style */}
-          <div className="flex gap-2 bg-black/80 backdrop-blur-xl px-3 py-2 rounded-xl border-2 border-cyan-500/30 shadow-[0_0_20px_rgba(6,182,212,0.3)]">
+          {/* Table View Toggle - Cyberpunk Style */}
+          <div className="flex gap-2 bg-black/40 backdrop-blur-sm px-2 py-2 rounded border border-cyan-500/20">
             <button 
               onClick={() => setUseRealisticTable(true)}
-              className={`px-4 py-2 rounded-lg text-xs font-black tracking-wider transition-all ${useRealisticTable ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white shadow-[0_0_20px_rgba(251,146,60,0.6)] border border-amber-400/50' : 'text-cyan-400/60 hover:text-cyan-400 hover:bg-cyan-500/10 border border-transparent'}`}
+              className={`relative px-4 py-1.5 text-xs font-black tracking-widest transition-all ${useRealisticTable ? 'text-amber-400' : 'text-cyan-400/40 hover:text-cyan-400/80'}`}
+              style={useRealisticTable ? {
+                background: 'linear-gradient(135deg, rgba(251, 146, 60, 0.15), rgba(217, 119, 6, 0.15))',
+                border: '1px solid rgba(251, 146, 60, 0.5)',
+                boxShadow: '0 0 10px rgba(251, 146, 60, 0.3), inset 0 0 10px rgba(251, 146, 60, 0.1)',
+                textShadow: '0 0 8px rgba(251, 146, 60, 0.8)'
+              } : {}}
               title="Realistic Oval Table"
             >
               🎰 REALISTIC
             </button>
             <button 
               onClick={() => setUseRealisticTable(false)}
-              className={`px-4 py-2 rounded-lg text-xs font-black tracking-wider transition-all ${!useRealisticTable ? 'bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-600 text-white shadow-[0_0_20px_rgba(6,182,212,0.6)] border border-cyan-400/50' : 'text-cyan-400/60 hover:text-cyan-400 hover:bg-cyan-500/10 border border-transparent'}`}
+              className={`relative px-4 py-1.5 text-xs font-black tracking-widest transition-all ${!useRealisticTable ? 'text-cyan-400' : 'text-cyan-400/40 hover:text-cyan-400/80'}`}
+              style={!useRealisticTable ? {
+                background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(168, 85, 247, 0.15))',
+                border: '1px solid rgba(6, 182, 212, 0.5)',
+                boxShadow: '0 0 10px rgba(6, 182, 212, 0.3), inset 0 0 10px rgba(6, 182, 212, 0.1)',
+                textShadow: '0 0 8px rgba(6, 182, 212, 0.8)'
+              } : {}}
               title="Simple Table View"
             >
               📐 SIMPLE
             </button>
           </div>
           
-          {/* Theme Switcher - Epic Style */}
-          <div className="flex gap-2 bg-black/80 backdrop-blur-xl px-3 py-2 rounded-xl border-2 border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.3)]">
+          {/* Theme Switcher - Cyberpunk Style */}
+          <div className="flex gap-1.5 bg-black/40 backdrop-blur-sm px-2 py-2 rounded border border-purple-500/20">
             <button 
               onClick={() => setTheme('executive')}
-              className={`px-3 py-2 rounded-lg text-lg transition-all ${theme === 'executive' ? 'bg-gradient-to-r from-yellow-500 to-amber-600 shadow-[0_0_20px_rgba(251,191,36,0.6)] scale-110' : 'opacity-50 hover:opacity-100 hover:scale-105'}`}
+              className={`relative px-2.5 py-1.5 text-base transition-all rounded ${theme === 'executive' ? '' : 'opacity-40 hover:opacity-70'}`}
+              style={theme === 'executive' ? {
+                background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(217, 119, 6, 0.15))',
+                border: '1px solid rgba(234, 179, 8, 0.5)',
+                boxShadow: '0 0 10px rgba(234, 179, 8, 0.4), inset 0 0 10px rgba(234, 179, 8, 0.1)',
+                filter: 'drop-shadow(0 0 8px rgba(234, 179, 8, 0.6))'
+              } : {}}
               title="Executive Black & Gold"
             >
               💎
             </button>
             <button 
               onClick={() => setTheme('classic')}
-              className={`px-3 py-2 rounded-lg text-lg transition-all ${theme === 'classic' ? 'bg-gradient-to-r from-green-500 to-emerald-600 shadow-[0_0_20px_rgba(16,185,129,0.6)] scale-110' : 'opacity-50 hover:opacity-100 hover:scale-105'}`}
+              className={`relative px-2.5 py-1.5 text-base transition-all rounded ${theme === 'classic' ? '' : 'opacity-40 hover:opacity-70'}`}
+              style={theme === 'classic' ? {
+                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15))',
+                border: '1px solid rgba(16, 185, 129, 0.5)',
+                boxShadow: '0 0 10px rgba(16, 185, 129, 0.4), inset 0 0 10px rgba(16, 185, 129, 0.1)',
+                filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.6))'
+              } : {}}
               title="Classic Green Table"
             >
               🎲
             </button>
             <button 
               onClick={() => setTheme('light')}
-              className={`px-3 py-2 rounded-lg text-lg transition-all ${theme === 'light' ? 'bg-gradient-to-r from-blue-400 to-sky-500 shadow-[0_0_20px_rgba(59,130,246,0.6)] scale-110' : 'opacity-50 hover:opacity-100 hover:scale-105'}`}
+              className={`relative px-2.5 py-1.5 text-base transition-all rounded ${theme === 'light' ? '' : 'opacity-40 hover:opacity-70'}`}
+              style={theme === 'light' ? {
+                background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(14, 165, 233, 0.15))',
+                border: '1px solid rgba(59, 130, 246, 0.5)',
+                boxShadow: '0 0 10px rgba(59, 130, 246, 0.4), inset 0 0 10px rgba(59, 130, 246, 0.1)',
+                filter: 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.6))'
+              } : {}}
               title="Light Mode"
             >
               ☀️
             </button>
             <button 
               onClick={() => setTheme('dark')}
-              className={`px-3 py-2 rounded-lg text-lg transition-all ${theme === 'dark' ? 'bg-gradient-to-r from-slate-600 to-gray-700 shadow-[0_0_20px_rgba(100,116,139,0.6)] scale-110' : 'opacity-50 hover:opacity-100 hover:scale-105'}`}
+              className={`relative px-2.5 py-1.5 text-base transition-all rounded ${theme === 'dark' ? '' : 'opacity-40 hover:opacity-70'}`}
+              style={theme === 'dark' ? {
+                background: 'linear-gradient(135deg, rgba(100, 116, 139, 0.15), rgba(71, 85, 105, 0.15))',
+                border: '1px solid rgba(100, 116, 139, 0.5)',
+                boxShadow: '0 0 10px rgba(100, 116, 139, 0.4), inset 0 0 10px rgba(100, 116, 139, 0.1)',
+                filter: 'drop-shadow(0 0 8px rgba(100, 116, 139, 0.6))'
+              } : {}}
               title="Dark Mode"
             >
               🌙
@@ -1301,18 +1337,58 @@ function App() {
           {!walletConnected ? (
             <div className="flex items-center gap-3">
               <button 
-                className="px-6 py-3 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black tracking-wider rounded-xl shadow-[0_0_30px_rgba(6,182,212,0.6)] border-2 border-cyan-400/50 transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(6,182,212,0.8)]" 
+                className="relative px-5 py-2 font-black text-xs tracking-[0.2em] uppercase transition-all overflow-hidden group"
                 onClick={connectWallet}
-                style={{ textShadow: '0 0 10px rgba(255,255,255,0.8)' }}
+                style={{
+                  background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(14, 165, 233, 0.2))',
+                  border: '2px solid rgba(6, 182, 212, 0.6)',
+                  boxShadow: '0 0 15px rgba(6, 182, 212, 0.4), inset 0 0 15px rgba(6, 182, 212, 0.1)',
+                  color: '#06b6d4',
+                  textShadow: '0 0 8px rgba(6, 182, 212, 0.8)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(135deg, rgba(6, 182, 212, 0.3), rgba(14, 165, 233, 0.3))';
+                  e.currentTarget.style.border = '2px solid rgba(6, 182, 212, 1)';
+                  e.currentTarget.style.boxShadow = '0 0 25px rgba(6, 182, 212, 0.6), inset 0 0 20px rgba(6, 182, 212, 0.2)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(14, 165, 233, 0.2))';
+                  e.currentTarget.style.border = '2px solid rgba(6, 182, 212, 0.6)';
+                  e.currentTarget.style.boxShadow = '0 0 15px rgba(6, 182, 212, 0.4), inset 0 0 15px rgba(6, 182, 212, 0.1)';
+                }}
               >
-                🔗 CONNECT WALLET
+                <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-cyan-400"></div>
+                <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-cyan-400"></div>
+                <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-cyan-400"></div>
+                <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-cyan-400"></div>
+                <span className="relative z-10">🔗 CONNECT WALLET</span>
               </button>
               <button 
-                className="px-6 py-3 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-600 hover:from-purple-400 hover:to-pink-500 text-white font-black tracking-wider rounded-xl shadow-[0_0_30px_rgba(168,85,247,0.6)] border-2 border-purple-400/50 transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(168,85,247,0.8)]" 
+                className="relative px-5 py-2 font-black text-xs tracking-[0.2em] uppercase transition-all overflow-hidden group"
                 onClick={startDemoMode}
-                style={{ textShadow: '0 0 10px rgba(255,255,255,0.8)' }}
+                style={{
+                  background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(236, 72, 153, 0.2))',
+                  border: '2px solid rgba(168, 85, 247, 0.6)',
+                  boxShadow: '0 0 15px rgba(168, 85, 247, 0.4), inset 0 0 15px rgba(168, 85, 247, 0.1)',
+                  color: '#a855f7',
+                  textShadow: '0 0 8px rgba(168, 85, 247, 0.8)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(236, 72, 153, 0.3))';
+                  e.currentTarget.style.border = '2px solid rgba(168, 85, 247, 1)';
+                  e.currentTarget.style.boxShadow = '0 0 25px rgba(168, 85, 247, 0.6), inset 0 0 20px rgba(168, 85, 247, 0.2)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(236, 72, 153, 0.2))';
+                  e.currentTarget.style.border = '2px solid rgba(168, 85, 247, 0.6)';
+                  e.currentTarget.style.boxShadow = '0 0 15px rgba(168, 85, 247, 0.4), inset 0 0 15px rgba(168, 85, 247, 0.1)';
+                }}
               >
-                🎮 DEMO MODE
+                <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-purple-400"></div>
+                <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-purple-400"></div>
+                <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-purple-400"></div>
+                <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-purple-400"></div>
+                <span className="relative z-10">🎮 DEMO MODE</span>
               </button>
             </div>
           ) : (
