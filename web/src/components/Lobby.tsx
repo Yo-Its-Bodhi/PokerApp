@@ -242,7 +242,7 @@ const Lobby: React.FC<LobbyProps> = ({ onSitDown }) => {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 pt-40 sm:pt-44 lg:pt-48 relative" style={{ zIndex: 1 }}>
+      <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 pt-52 sm:pt-56 lg:pt-60 relative" style={{ zIndex: 1 }}>
         {/* 💎 NEON HEADER 💎 */}
         <div className="text-center mb-8 sm:mb-12 lg:mb-16 relative">
           {/* Background glow effects */}
