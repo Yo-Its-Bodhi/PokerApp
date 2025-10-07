@@ -1238,65 +1238,61 @@ function App() {
       {/* Fixed Header - Full Width */}
       <header className="fixed top-0 left-0 right-0 flex justify-between items-center px-8 py-4 bg-black/95 border-b-2 border-cyan-500/40 backdrop-blur-xl z-50 shadow-[0_4px_20px_rgba(0,0,0,0.8)]" 
               style={{ boxShadow: '0 4px 30px rgba(6, 182, 212, 0.3), inset 0 1px 1px rgba(6,182,212,0.2)' }}>
-        {/* Logo with Shido Image */}
+        {/* Logo - New Design */}
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3 px-4 py-2 bg-black/60 rounded-xl border border-cyan-500/30 backdrop-blur-sm">
+          <div className="flex items-center gap-3 px-2 py-1">
             <img 
-              src="/shido-logo.png" 
-              alt="Shido Logo" 
-              className="w-36 h-36 object-contain drop-shadow-[0_0_20px_rgba(6,182,212,0.8)]"
+              src="/poker-logo.png" 
+              alt="Poker Logo" 
+              className="h-16 w-auto object-contain drop-shadow-[0_0_20px_rgba(6,182,212,0.8)]"
             />
-            <h1 className="text-3xl font-black tracking-tight relative text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400" 
-                style={{ textShadow: '0 0 20px rgba(6, 182, 212, 0.6), 0 0 40px rgba(168, 85, 247, 0.4)' }}>
-              POKER
-            </h1>
           </div>
         </div>
         <div className="flex items-center gap-4">
-          {/* Table View Toggle */}
-          <div className="flex gap-1 bg-black/30 backdrop-blur-sm px-1.5 py-1.5 rounded-xl border border-white/10">
+          {/* Table View Toggle - Epic Style */}
+          <div className="flex gap-2 bg-black/80 backdrop-blur-xl px-3 py-2 rounded-xl border-2 border-cyan-500/30 shadow-[0_0_20px_rgba(6,182,212,0.3)]">
             <button 
               onClick={() => setUseRealisticTable(true)}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${useRealisticTable ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-lg shadow-amber-500/50' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+              className={`px-4 py-2 rounded-lg text-xs font-black tracking-wider transition-all ${useRealisticTable ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white shadow-[0_0_20px_rgba(251,146,60,0.6)] border border-amber-400/50' : 'text-cyan-400/60 hover:text-cyan-400 hover:bg-cyan-500/10 border border-transparent'}`}
               title="Realistic Oval Table"
             >
               🎰 REALISTIC
             </button>
             <button 
               onClick={() => setUseRealisticTable(false)}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${!useRealisticTable ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-500/50' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+              className={`px-4 py-2 rounded-lg text-xs font-black tracking-wider transition-all ${!useRealisticTable ? 'bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-600 text-white shadow-[0_0_20px_rgba(6,182,212,0.6)] border border-cyan-400/50' : 'text-cyan-400/60 hover:text-cyan-400 hover:bg-cyan-500/10 border border-transparent'}`}
               title="Simple Table View"
             >
               📐 SIMPLE
             </button>
           </div>
           
-          {/* Theme Switcher */}
-          <div className="flex gap-1 bg-black/30 backdrop-blur-sm px-1.5 py-1.5 rounded-xl border border-white/10">
+          {/* Theme Switcher - Epic Style */}
+          <div className="flex gap-2 bg-black/80 backdrop-blur-xl px-3 py-2 rounded-xl border-2 border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.3)]">
             <button 
               onClick={() => setTheme('executive')}
-              className={`px-3 py-2 rounded-lg text-xs font-bold transition-all ${theme === 'executive' ? 'bg-gradient-to-r from-yellow-600 to-amber-700 text-white shadow-lg shadow-yellow-500/50' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+              className={`px-3 py-2 rounded-lg text-lg transition-all ${theme === 'executive' ? 'bg-gradient-to-r from-yellow-500 to-amber-600 shadow-[0_0_20px_rgba(251,191,36,0.6)] scale-110' : 'opacity-50 hover:opacity-100 hover:scale-105'}`}
               title="Executive Black & Gold"
             >
               💎
             </button>
             <button 
               onClick={() => setTheme('classic')}
-              className={`px-3 py-2 rounded-lg text-xs font-bold transition-all ${theme === 'classic' ? 'bg-gradient-to-r from-green-600 to-emerald-700 text-white shadow-lg shadow-green-500/50' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+              className={`px-3 py-2 rounded-lg text-lg transition-all ${theme === 'classic' ? 'bg-gradient-to-r from-green-500 to-emerald-600 shadow-[0_0_20px_rgba(16,185,129,0.6)] scale-110' : 'opacity-50 hover:opacity-100 hover:scale-105'}`}
               title="Classic Green Table"
             >
               🎲
             </button>
             <button 
               onClick={() => setTheme('light')}
-              className={`px-3 py-2 rounded-lg text-xs font-bold transition-all ${theme === 'light' ? 'bg-gradient-to-r from-blue-500 to-sky-600 text-white shadow-lg shadow-blue-500/50' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+              className={`px-3 py-2 rounded-lg text-lg transition-all ${theme === 'light' ? 'bg-gradient-to-r from-blue-400 to-sky-500 shadow-[0_0_20px_rgba(59,130,246,0.6)] scale-110' : 'opacity-50 hover:opacity-100 hover:scale-105'}`}
               title="Light Mode"
             >
               ☀️
             </button>
             <button 
               onClick={() => setTheme('dark')}
-              className={`px-3 py-2 rounded-lg text-xs font-bold transition-all ${theme === 'dark' ? 'bg-gradient-to-r from-slate-700 to-gray-800 text-white shadow-lg shadow-slate-500/50' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+              className={`px-3 py-2 rounded-lg text-lg transition-all ${theme === 'dark' ? 'bg-gradient-to-r from-slate-600 to-gray-700 shadow-[0_0_20px_rgba(100,116,139,0.6)] scale-110' : 'opacity-50 hover:opacity-100 hover:scale-105'}`}
               title="Dark Mode"
             >
               🌙
@@ -1305,14 +1301,16 @@ function App() {
           {!walletConnected ? (
             <div className="flex items-center gap-3">
               <button 
-                className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/50 transition-all hover:scale-105" 
+                className="px-6 py-3 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black tracking-wider rounded-xl shadow-[0_0_30px_rgba(6,182,212,0.6)] border-2 border-cyan-400/50 transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(6,182,212,0.8)]" 
                 onClick={connectWallet}
+                style={{ textShadow: '0 0 10px rgba(255,255,255,0.8)' }}
               >
                 🔗 CONNECT WALLET
               </button>
               <button 
-                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-xl shadow-lg shadow-purple-500/50 transition-all hover:scale-105" 
+                className="px-6 py-3 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-600 hover:from-purple-400 hover:to-pink-500 text-white font-black tracking-wider rounded-xl shadow-[0_0_30px_rgba(168,85,247,0.6)] border-2 border-purple-400/50 transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(168,85,247,0.8)]" 
                 onClick={startDemoMode}
+                style={{ textShadow: '0 0 10px rgba(255,255,255,0.8)' }}
               >
                 🎮 DEMO MODE
               </button>

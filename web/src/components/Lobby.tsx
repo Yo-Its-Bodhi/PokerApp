@@ -158,6 +158,32 @@ const Lobby: React.FC<LobbyProps> = ({ onSitDown }) => {
           </div>
         ))}
 
+        {/* 🌟 FLOATING WHITE SHIDO LOGOS 🌟 */}
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={`shido-white-${i}`}
+            className="absolute"
+            style={{
+              left: `${(i * 13 + 8) % 95}%`,
+              top: `${((i * 19) % 75) + 10}%`,
+              width: `${80 + (i % 3) * 40}px`,
+              animation: `cardBackFloat ${20 + i * 2.5}s ease-in-out infinite`,
+              animationDelay: `${i * 2.5}s`,
+              opacity: 0,
+              filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.3))',
+            }}
+          >
+            <img 
+              src="/shido-white.png" 
+              alt="" 
+              className="w-full h-auto object-contain opacity-20"
+              style={{
+                filter: 'brightness(1.2)',
+              }}
+            />
+          </div>
+        ))}
+
         {/* Large background hexagons with depth */}
         <div className="absolute top-1/4 left-1/4 w-[300px] sm:w-[350px] lg:w-[400px] h-[260px] sm:h-[300px] lg:h-[350px] opacity-10" 
              style={{ animation: 'hexFloat 20s ease-in-out infinite' }}>
@@ -224,9 +250,9 @@ const Lobby: React.FC<LobbyProps> = ({ onSitDown }) => {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[450px] lg:w-[600px] h-[100px] sm:h-[150px] lg:h-[200px] bg-purple-500/20 blur-[60px] sm:blur-[80px] lg:blur-[100px] animate-pulse" 
                style={{ animationDelay: '1s' }}></div>
           
-          {/* Shido Logo - 50% SMALLER PADDING - RESPONSIVE */}
-          <div className="flex justify-center mb-4 sm:mb-6 lg:mb-8">
-            <img src="/shido-logo.png" alt="Shido" className="w-[108px] h-[108px] sm:w-[162px] sm:h-[162px] lg:w-[216px] lg:h-[216px] object-contain drop-shadow-[0_0_40px_rgba(6,182,212,1)] sm:drop-shadow-[0_0_50px_rgba(6,182,212,1)] lg:drop-shadow-[0_0_60px_rgba(6,182,212,1)] animate-pulse" />
+          {/* Poker Logo - RESPONSIVE */}
+          <div className="flex justify-center mb-6 sm:mb-8 lg:mb-10">
+            <img src="/poker-logo.png" alt="Poker" className="h-[120px] sm:h-[180px] lg:h-[240px] w-auto object-contain drop-shadow-[0_0_40px_rgba(6,182,212,1)] sm:drop-shadow-[0_0_50px_rgba(6,182,212,1)] lg:drop-shadow-[0_0_60px_rgba(6,182,212,1)] animate-pulse" />
           </div>
           
           {/* POKER Title - RESPONSIVE */}
