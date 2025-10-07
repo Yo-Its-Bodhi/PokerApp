@@ -1,0 +1,119 @@
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   📸  HOW TO ADD YOUR BLUE ICON TO CARD BACKS               ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+🎯 QUICK STEPS:
+
+1. Save the blue icon image you showed me
+   
+2. Name it exactly: card-back-icon.png
+   
+3. Put it in this folder:
+   C:\Users\dj_ba\Desktop\Poker\web\public\
+   
+4. Refresh your browser (Ctrl + F5)
+
+That's it! 🎴
+
+
+📋 DETAILED INSTRUCTIONS:
+
+Step 1: Save the Image
+─────────────────────
+• Right-click on your blue icon image
+• Choose "Save Image As..."
+• Save as: card-back-icon.png
+• Make sure it's PNG format with transparent background
+
+
+Step 2: Remove Background (if needed)
+────────────────────────────────────
+If your image has a white/gray background:
+• Use: https://www.remove.bg/
+• Upload your image
+• Download the PNG with transparent background
+• Save as: card-back-icon.png
+
+
+Step 3: Place in Public Folder
+─────────────────────────────
+Location: C:\Users\dj_ba\Desktop\Poker\web\public\
+
+You can:
+• Drag and drop the file into the folder
+• Or use File Explorer to copy/paste it there
+
+
+Step 4: Verify
+─────────────
+The file path should be exactly:
+C:\Users\dj_ba\Desktop\Poker\web\public\card-back-icon.png
+
+
+Step 5: Test
+───────────
+• Start the dev server: npm run dev
+• Open browser: http://localhost:5177
+• Join demo game
+• Watch cards get dealt - your icon should appear on card backs!
+
+
+✨ WHAT YOU'LL SEE:
+
+Before:
+  → Blue gradient with geometric pattern (fallback)
+
+After:
+  → Your custom blue icon centered on card backs
+  → Smooth flip animations when cards are revealed
+  → Cards dealing one at a time with rotation
+  → Professional casino-style card handling
+
+
+🎨 IMAGE TIPS:
+
+Best Results:
+  ✓ PNG format with transparency
+  ✓ Square dimensions (512x512 or 1024x1024)
+  ✓ Blue color scheme (matches poker theme)
+  ✓ Clean, geometric design
+  ✓ High contrast for visibility
+
+Avoid:
+  ✗ JPG format (no transparency)
+  ✗ Very small images (will look pixelated)
+  ✗ Complex gradients (may not show well at small size)
+  ✗ Text that's too small to read
+
+
+🔧 TROUBLESHOOTING:
+
+Image not showing?
+  → Check the filename: card-back-icon.png (exact)
+  → Check the folder: web/public/
+  → Clear browser cache: Ctrl + Shift + Delete
+  → Hard refresh: Ctrl + F5
+
+Image looks blurry?
+  → Use larger source image (1024x1024 recommended)
+  → Ensure PNG format, not JPG
+
+Wrong colors?
+  → The card back has a blue gradient overlay
+  → Your icon will show through with white/light drop shadow
+
+
+📞 NEED HELP?
+
+If the image still doesn't appear:
+  1. Check browser console (F12) for errors
+  2. Verify file exists at exact path
+  3. Try base64 encoding instead (see CARD_ANIMATIONS.md)
+
+
+╔══════════════════════════════════════════════════════════════╗
+║  Once your image is in place, you'll have professional      ║
+║  animated poker cards with your custom card back design! 🎰  ║
+╚══════════════════════════════════════════════════════════════╝

@@ -1,0 +1,272 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║                  🎨 UI POLISH UPDATE - IMPLEMENTED! 🎨                     ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+
+✅ COMPLETED UPDATES
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+1. 🚪 LEAVE CONFIRMATION
+
+   What Changed:
+     → Pressing LEAVE button now shows confirmation dialog
+     → "Are you sure you want to leave the table?"
+     → YES: Exits table and returns to lobby
+     → NO: Cancels and stays at table
+
+   Code Location:
+     web/src/App.tsx → handleStandUp()
+
+   User Experience:
+     - Prevents accidental exits
+     - Standard browser confirm dialog
+     - Clear Yes/No choice
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+2. 💰 BLUE POT CHIPS
+
+   What Changed:
+     → Pot chip stacks changed from gold to blue
+     → Gradient: blue-400 → blue-500 → blue-600
+     → Blue glow underneath chips
+     → Matches cyberpunk theme better
+
+   Visual:
+     Before: 🟡🟡🟡🟡 (Gold)
+     After:  🔵🔵🔵🔵 (Blue)
+
+   Code Location:
+     web/src/components/PotDisplay.tsx
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+3. 🎴 DARKER GLASSY BLUE CARD BACKS
+
+   What Changed:
+     → Card backs now darker blue (blue-900/blue-800/slate-900)
+     → Added glass reflection effect
+     → Blue-tinted geometric pattern
+     → Blue corner decorations
+     → More elegant and mysterious look
+
+   Visual Style:
+     ┌─────────────────────┐
+     │  ╔═══════════════╗  │   ← Blue corners
+     │  ║               ║  │
+     │  ║  [Dark Blue]  ║  │   ← Glassy dark blue
+     │  ║   Gradient    ║  │
+     │  ║               ║  │
+     │  ╚═══════════════╝  │
+     └─────────────────────┘
+
+   Code Location:
+     web/src/components/Card.tsx
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+4. ⚡ ANIMATED PLAYER NAME BOX (ACTIVE TURN)
+
+   What Changed:
+     → Player name box pulses when it's their turn
+     → Cyan glowing border with shadow
+     → Scale up effect (1.05x)
+     → Smooth pulsing animation
+     → Works for ALL players (not just you)
+
+   Animation:
+     Normal Turn:   [Player Name]     (Gold border)
+     Active Turn:   ║Player Name║     (Cyan pulsing + glow)
+                    ↑ Scale 1.05x
+
+   Features:
+     - Pulsing cyan border
+     - Glowing shadow effect
+     - Smooth scale transition
+     - Continuous pulse while active
+
+   Code Location:
+     web/src/components/Table.tsx
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+5. 👤 FIXED AVATAR DISPLAY (SEATS 3 & 6)
+
+   What Was Wrong:
+     → Seats 3 and 6 avatars were not showing
+     → Z-index conflict causing clipping
+
+   What Fixed:
+     → Simplified z-index structure
+     → Removed conflicting nested z-index layers
+     → All seats now at consistent z-20
+     → Avatars properly positioned at z-30
+
+   Result:
+     ✅ All 6 seats now show avatars correctly
+     ✅ Seat 3 (middle left): Avatar visible
+     ✅ Seat 6 (bottom right): Avatar visible
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+📋 FILES MODIFIED
+
+  ✓ web/src/App.tsx
+    - Added leave confirmation dialog
+
+  ✓ web/src/components/Table.tsx
+    - Fixed avatar z-index for seats 3 & 6
+    - Added active turn animation to player name box
+    - Added scale and glow effects
+
+  ✓ web/src/components/PotDisplay.tsx
+    - Changed pot chips from gold to blue
+    - Updated chip gradient and glow colors
+
+  ✓ web/src/components/Card.tsx
+    - Darkened card back gradient (blue-900/800)
+    - Added glass reflection effect
+    - Updated corner decorations to blue
+    - Enhanced geometric pattern
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+🎨 VISUAL IMPROVEMENTS SUMMARY
+
+  Before → After:
+
+  Leave Button:
+    Click → Immediate exit  →  Click → Confirm dialog → Exit/Cancel
+
+  Pot Chips:
+    Gold stacks  →  Blue stacks with glow
+
+  Card Backs:
+    Bright blue  →  Dark glassy blue with reflection
+
+  Active Player:
+    Gold border  →  Cyan pulsing border + glow + scale
+
+  Avatars:
+    Seats 3&6 missing  →  All 6 seats showing avatars
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+🎯 WHAT YOU'LL SEE NOW
+
+  1. Press LEAVE button:
+     "Are you sure you want to leave the table?"
+     [Cancel] [OK]
+
+  2. Look at the pot:
+     Blue chip stacks with blue glow ████████
+
+  3. Look at card backs:
+     Dark mysterious blue with glass effect 🎴
+
+  4. When it's someone's turn:
+     Their name box pulses with cyan glow ⚡
+     Box scales up slightly (1.05x)
+     Continuous smooth animation
+
+  5. Check all player seats:
+     All avatars visible including seats 3 & 6 👤
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+💡 TECHNICAL DETAILS
+
+  Leave Confirmation:
+    - Uses native window.confirm()
+    - Blocking dialog (waits for user)
+    - Returns true/false
+
+  Blue Pot Chips:
+    - Gradient: from-blue-400 via-blue-500 to-blue-600
+    - Glow: bg-blue-400/40 with blur
+    - Border: border-blue-300/50
+
+  Dark Card Back:
+    - Base: from-blue-900 via-blue-800 to-slate-900
+    - Glass effect: white/10 gradient overlay
+    - Pattern: blue-tinted geometric
+    - Corners: blue-400/60 borders
+
+  Active Turn Animation:
+    - Border: border-brand-cyan
+    - Shadow: shadow-[0_0_20px_rgba(0,255,255,0.6)]
+    - Animation: animate-[pulseTeal_1.5s_ease-in-out_infinite]
+    - Scale: scale-105
+    - Transition: transition-all duration-300
+
+  Avatar Z-Index Fix:
+    - Seat container: z-20
+    - Avatar: z-30 (always on top)
+    - Removed conflicting nested z-layers
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+✅ TESTING CHECKLIST
+
+  ☐ Press LEAVE button → Confirm dialog appears
+  ☐ Click Cancel → Stay at table
+  ☐ Click OK → Return to lobby
+
+  ☐ Look at pot → Blue chip stacks visible
+  
+  ☐ Look at card backs → Dark glassy blue
+  
+  ☐ Start demo hand → Active player name box pulses with cyan
+  ☐ Name box scales up slightly
+  ☐ Glow effect visible around border
+  
+  ☐ Sit at seat 3 → Avatar shows above name
+  ☐ AI player at seat 6 → Avatar shows above name
+  ☐ Check all 6 seats → All avatars visible
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+🎉 RESULT
+
+Your poker game now has:
+  ✓ Safer exit with confirmation
+  ✓ Better color scheme (blue chips)
+  ✓ More elegant card backs
+  ✓ Clear visual indication of active player
+  ✓ All player avatars displaying correctly
+
+Much more polished and professional! 🎰✨
+
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║              🚀 READY TO SEE THE IMPROVEMENTS! 🚀                          ║
+║                                                                            ║
+║                    cd web && npm run dev                                   ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝

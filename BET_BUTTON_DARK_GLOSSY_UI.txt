@@ -1,0 +1,592 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║            🎨 BET BUTTON + ULTRA DARK GLOSSY UI - DONE! 🎨               ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+
+✅ FEATURE 1: DYNAMIC BET/CALL BUTTON
+
+
+Problem:
+  The "CALL" button was always showing, even when there was no bet to call.
+  In poker, when no one has bet yet, you should see "BET" instead of "CALL".
+
+
+Solution Implemented:
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  WHEN currentBet === 0:
+  ┌────────────────────────────────────┐
+  │                                    │
+  │         🟣  BET  🟣                │  <- Purple/Magenta glow
+  │                                    │
+  │  Use this to start the betting     │
+  │  Makes initial bet (raise amount)  │
+  └────────────────────────────────────┘
+  
+  Button Style:
+  • Background: purple-900/60 → purple-700
+  • Text: purple-300 → white
+  • Glow: Purple shadow (rgba(168,85,247,0.3))
+  • Hover glow: Stronger (rgba(168,85,247,0.5))
+
+
+  WHEN currentBet > 0:
+  ┌────────────────────────────────────┐
+  │                                    │
+  │         🔵  CALL  🔵               │  <- Blue (original)
+  │                                    │
+  │  Use this to match the bet         │
+  └────────────────────────────────────┘
+  
+  Button Style:
+  • Background: blue-900/50 → blue-800
+  • Text: blue-400 → white
+  • Standard appearance
+
+
+  Code Changes:
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  
+  1. App.tsx:
+     - Pass currentBet prop to Actions component:
+       <Actions currentBet={currentBet} ... />
+  
+  2. Actions.tsx:
+     - Accept currentBet prop (default 0)
+     - Conditional rendering:
+       {currentBet === 0 ? (
+         <button className="...purple..." onClick={() => onAction('raise', raiseAmount)}>
+           BET
+         </button>
+       ) : (
+         <button className="...blue..." onClick={() => onAction('call')}>
+           CALL
+         </button>
+       )}
+
+
+  Visual Comparison:
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  
+  Before:                          After:
+  
+  [FOLD]                          [FOLD]
+  [CHECK]                         [CHECK]
+  [CALL] ← Always blue            [BET] ← Purple when currentBet = 0
+  [RAISE]                         [RAISE]
+  [ALL IN]                        [ALL IN]
+  [LEAVE]                         [LEAVE]
+  
+                                  ---OR---
+                                  
+                                  [FOLD]
+                                  [CHECK]
+                                  [CALL] ← Blue when currentBet > 0
+                                  [RAISE]
+                                  [ALL IN]
+                                  [LEAVE]
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+✅ FEATURE 2: ULTRA DARK & GLOSSY UI
+
+
+Transformation:
+  The entire UI has been transformed from a lighter cyberpunk theme to
+  an ultra-dark, glossy, premium tech interface.
+
+
+1. GLASS-CARD COMPONENT (ALL PANELS)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   Before:
+   • Light cyan tint: rgba(0, 255, 255, 0.02)
+   • Blur: 24px
+   • Border: cyan/15%
+   • Shadow: Medium depth
+
+   After:
+   • Dark slate base: rgba(15, 23, 42, 0.85)
+   • Stronger blur: 32px with saturation boost (180%)
+   • Border: blue/20% (more visible)
+   • Shadow: Much deeper (0.7 opacity black)
+   • Inset shadows for depth:
+     - Top highlight: blue/15%
+     - Bottom shadow: black/50%
+   • Gloss overlay (::after pseudo-element):
+     - Top-to-bottom gradient
+     - White/3% at top (shine)
+     - Black/10% at bottom (depth)
+   
+   Visual:
+   ┌─────────────────────────────────┐
+   │ ░ Subtle top shine              │
+   │                                 │
+   │   DARKER BACKGROUND             │
+   │   MORE BLUR                     │
+   │   GLOSSY REFLECTIONS            │
+   │                                 │
+   │ ▓ Subtle bottom shadow          │
+   └─────────────────────────────────┘
+   
+   Affects:
+   ✓ Actions panel (buttons)
+   ✓ Chat panel
+   ✓ Game Log panel
+   ✓ Fairness Pane
+   ✓ Player cards on table
+
+
+2. POKER TABLE SURFACE
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   Before:
+   • Purple gradient: brand-surface/background
+   • Cyan border
+   • Cyan glow
+
+   After:
+   • Ultra-dark gradient:
+     - from-slate-950 (almost black)
+     - via-blue-950/80 (very dark blue)
+     - to-black (pure black)
+   • Border: blue-500/30 (darker, subtler)
+   • Multi-layer shadow:
+     - Outer glow: blue (0.3 opacity)
+     - Inner top shine: white/5%
+     - Inner bottom shadow: black/80%
+   • Backdrop blur: xl
+   • Gloss overlay layer (white/5% to black/40%)
+   • Grid opacity reduced: 10% → 5%
+   
+   Visual:
+   ┌───────────────────────────────────────┐
+   │ ╱╲ Glossy surface with shine          │
+   │╱  ╲                                   │
+   │    [Community Cards]                  │
+   │         [Pot]                         │
+   │                                       │
+   │  [Player]     [Player]     [Player]   │
+   │╲  ╱ Deep black background             │
+   │ ╲╱  with subtle blue tint             │
+   └───────────────────────────────────────┘
+
+
+3. PLAYER CARDS
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   Before:
+   • Gold/10% background for your card
+   • Gold/40% border (inactive)
+   • Cyan border (active)
+
+   After:
+   • Your card: Dark blue gradient
+     - from-blue-900/30 to-slate-900/50
+   • Other cards: slate-950/60 (very dark)
+   • Inactive border: blue-500/30 with inset shadow
+   • Active border: Cyan with double shadow:
+     - Outer: 0_0_25px cyan glow
+     - Inner: 0_0_20px cyan/10% (gloss)
+   • All cards have depth shadow:
+     - inset_0_2px_8px_rgba(0,0,0,0.6)
+   
+   Visual:
+   Inactive:
+   ┌──────────────────┐
+   │ ▓ Deep shadow    │
+   │                  │
+   │  Player Name     │
+   │  Stack: 100K     │
+   │                  │
+   │ ░ Gloss shine    │
+   └──────────────────┘
+   
+   Active (your turn):
+   ┌══════════════════┐ <- Cyan glow
+   ║ ░ Inner glow     ║
+   ║                  ║
+   ║  Player Name     ║
+   ║  Stack: 100K     ║
+   ║  ⏰ YOUR TURN    ║
+   ║                  ║
+   └══════════════════┘
+
+
+4. AVATAR CIRCLES
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   Before:
+   • Purple-dark gradient
+   • Gold border
+   • Standard shadow
+
+   After:
+   • Ultra-dark gradient:
+     - from-slate-900
+     - via-blue-950
+     - to-black
+   • Gold border (unchanged)
+   • Enhanced shadow:
+     - Outer: Gold glow (0.6 opacity)
+     - Inner: White shine (0.1 opacity)
+   
+   Visual:
+        ╱ Gold glow ╲
+       ╱             ╲
+      │   🎮 Avatar   │
+      │  Dark gloss   │
+       ╲             ╱
+        ╲ Shine    ╱
+
+
+5. COLOR SCHEME SHIFT
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   Before → After:
+   
+   Backgrounds:
+   rgba(0,255,255,0.02) → rgba(15,23,42,0.85)  (Much darker)
+   
+   Borders:
+   cyan/15% → blue/20%  (More visible but darker tone)
+   
+   Shadows:
+   0.4 opacity → 0.7 opacity  (Deeper)
+   
+   Grid:
+   cyan/10% → blue/15% at 5% opacity  (Darker, less distracting)
+   
+   Player Cards:
+   Gold tint → Dark blue/slate gradient
+   
+   Overall Tone:
+   Purple/Cyan cyberpunk → Ultra-dark blue/black premium
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+📦 FILES MODIFIED
+
+
+1. web/src/App.tsx
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   
+   Change:
+   - Pass currentBet prop to Actions component
+   
+   Line:
+   <Actions onAction={handleAction} onStandUp={handleStandUp} currentBet={currentBet} />
+
+
+2. web/src/components/Actions.tsx
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   
+   Changes:
+   - Add currentBet prop to interface (default 0)
+   - Replace static CALL button with conditional BET/CALL:
+     
+     {currentBet === 0 ? (
+       <button className="...purple... shadow-[0_0_15px_rgba(168,85,247,0.3)]">
+         BET
+       </button>
+     ) : (
+       <button className="...blue...">
+         CALL
+       </button>
+     )}
+
+
+3. web/src/index.css
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   
+   Changes to .glass-card:
+   
+   Background:
+   - OLD: linear-gradient(135deg, rgba(0,255,255,0.02), rgba(0,128,255,0.03))
+   - NEW: linear-gradient(135deg, rgba(15,23,42,0.85), rgba(30,41,59,0.75))
+   
+   Backdrop Filter:
+   - OLD: blur(24px)
+   - NEW: blur(32px) saturate(180%)
+   
+   Border:
+   - OLD: 1px solid rgba(0,255,255,0.15)
+   - NEW: 1px solid rgba(59,130,246,0.2)
+   
+   Box Shadow:
+   - Added deeper shadows (0.7 opacity)
+   - Added inset highlights (blue/15%)
+   - Added inset depth shadows (black/50%)
+   
+   New ::after pseudo-element:
+   - Adds glossy gradient overlay
+   - Top: white/3% (shine)
+   - Bottom: black/10% (depth)
+
+
+4. web/src/components/Table.tsx
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   
+   Changes:
+   
+   Table Background:
+   - OLD: from-brand-surface via-brand-background to-black
+   - NEW: from-slate-950 via-blue-950/80 to-black
+   
+   Table Border:
+   - OLD: border-brand-cyan shadow-glow-cyan
+   - NEW: border-blue-500/30 with multi-layer shadow
+   
+   Table Overlays:
+   - Added gloss overlay: white/5% to black/40%
+   - Reduced grid opacity: 10% → 5%
+   
+   Avatar Background:
+   - OLD: from-brand-purple-dark via-brand-background to-black
+   - NEW: from-slate-900 via-blue-950 to-black
+   - Enhanced shadow with gold glow and inner shine
+   
+   Player Cards:
+   - Your card: from-blue-900/30 to-slate-900/50
+   - Other cards: slate-950/60
+   - Inactive border: blue-500/30 with inset shadow
+   - Active border: Cyan with double glow
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+🎮 HOW IT WORKS
+
+
+SCENARIO 1: START OF BETTING ROUND
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Round: Preflop (after blinds)
+  Current Bet: 1000 (big blind)
+  
+  You see:
+  [CALL] ← Blue button (because there's a bet to call)
+  
+  Action: Click CALL → Match the 1000 bet
+
+
+SCENARIO 2: EVERYONE CHECKS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Round: Flop
+  Current Bet: 0 (no one has bet yet)
+  
+  You see:
+  [BET] ← Purple button (because no one has bet)
+  
+  Action: Click BET → Make first bet (uses raise amount slider)
+
+
+SCENARIO 3: OPPONENT BETS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Round: Turn
+  Current Bet: 5000 (opponent bet 5K)
+  
+  You see:
+  [CALL] ← Blue button (there's a bet to call)
+  
+  Action: Click CALL → Match the 5000 bet
+
+
+SCENARIO 4: CHECKED TO YOU
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Round: River
+  Current Bet: 0 (opponent checked)
+  
+  You see:
+  [BET] ← Purple button (no bet on table)
+  
+  Actions:
+  - Click CHECK → Don't bet
+  - Click BET → Make a bet
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+🎨 VISUAL BEFORE/AFTER
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│                           BEFORE                                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌──────────────────────────────────────────────────┐          │
+│  │ 🟦 Lighter cyan-tinted panels                    │          │
+│  │    Medium blur                                   │          │
+│  │    Purple table background                       │          │
+│  │    Always shows CALL button (blue)               │          │
+│  │    Moderate contrast                             │          │
+│  └──────────────────────────────────────────────────┘          │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                           AFTER                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌──────────────────────────────────────────────────┐          │
+│  │ ⬛ Ultra-dark slate/blue panels                  │          │
+│  │    Heavy blur (32px) with saturation             │          │
+│  │    Glossy overlays (shine + depth)               │          │
+│  │    Nearly-black table with blue tint             │          │
+│  │    Smart BET (purple) / CALL (blue) toggle       │          │
+│  │    High contrast, premium feel                   │          │
+│  │    Multiple shadow layers for depth              │          │
+│  └──────────────────────────────────────────────────┘          │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+✨ VISUAL EFFECTS BREAKDOWN
+
+
+Glass Effect Anatomy:
+  ┌────────────────────────────────┐
+  │ ░░░ Top shine (white/3%)       │ <- Gloss
+  │ ═══ Top border glow (blue)     │ <- Highlight
+  │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ │
+  │ ▓ Dark background (slate) ▓    │ <- Base
+  │ ▓ Heavy blur (32px)       ▓    │
+  │ ▓ Saturated colors        ▓    │
+  │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ │
+  │ ▓▓▓ Bottom shadow (black)      │ <- Depth
+  │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ │
+  └────────────────────────────────┘
+       ↓
+  Deep outer shadow (black/70%)
+
+
+Active Player Card Effect:
+  ┌════════════════════════════════┐
+  ║ ✨ Outer cyan glow (25px)      ║
+  ║ ╔══════════════════════════╗  ║
+  ║ ║ ░ Inner cyan glow (20px) ║  ║
+  ║ ║                          ║  ║
+  ║ ║  Player Name  ⏰         ║  ║
+  ║ ║  100,000 SHIDO           ║  ║
+  ║ ║                          ║  ║
+  ║ ╚══════════════════════════╝  ║
+  ║ Pulsing animation (1.5s loop) ║
+  └════════════════════════════════┘
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+✅ STATUS: ALL COMPLETE
+
+
+Compilation Status:
+  ✅ App.tsx: No errors
+  ✅ Actions.tsx: No errors
+  ✅ Table.tsx: No errors
+  ✅ index.css: No errors
+
+
+Features Implemented:
+  ✅ BET button shows when currentBet = 0
+  ✅ CALL button shows when currentBet > 0
+  ✅ BET button has purple color & glow
+  ✅ CALL button keeps blue color
+  ✅ Glass panels ultra-darkened
+  ✅ Glass panels glossier with overlays
+  ✅ Table surface nearly black
+  ✅ Player cards much darker
+  ✅ Avatar circles darker
+  ✅ Enhanced depth shadows
+  ✅ Multi-layer shadow effects
+
+
+Visual Improvements:
+  ✅ Darker backgrounds (slate-950, blue-950)
+  ✅ Stronger blur (32px + saturation)
+  ✅ Gloss overlays (shine + depth gradients)
+  ✅ Deeper shadows (0.7 opacity)
+  ✅ Inset highlights (blue glow)
+  ✅ Inset depth shadows (black)
+  ✅ Premium glossy appearance
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+🚀 TEST IT NOW
+
+
+Server running at: http://localhost:5177
+
+1. Refresh your browser
+2. Start demo game
+3. Observe:
+   
+   ✓ When it's first to act (no bets):
+     → See purple "BET" button
+   
+   ✓ When someone has bet:
+     → See blue "CALL" button
+   
+   ✓ Overall appearance:
+     → Much darker panels
+     → Glossy reflections
+     → Deeper shadows
+     → Premium feel
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+💎 DESIGN NOTES
+
+
+Why This Works:
+  
+  1. BET vs CALL clarity:
+     • Different colors help distinguish game state
+     • Purple = initiating action (aggressive)
+     • Blue = responding to action (passive)
+     • Matches poker terminology exactly
+  
+  2. Ultra-dark aesthetic:
+     • Reduces eye strain for long sessions
+     • Makes neon accents pop more
+     • Creates premium, professional feel
+     • Better focus on important elements
+  
+  3. Glossy effects:
+     • Multiple shadow layers = depth perception
+     • Shine gradients = polished surface
+     • Inset shadows = recessed panels
+     • Creates "expensive" appearance
+  
+  4. Color psychology:
+     • Dark blue = Trust, stability, depth
+     • Black = Power, elegance, mystery
+     • Purple = Royalty, luxury (for BET)
+     • Cyan accents = Energy, technology
+
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║                  🎮 SHIDO POKER - ULTRA PREMIUM! 🎮                       ║
+║                                                                            ║
+║                 Smart BET/CALL + Glossy Dark UI                            ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝

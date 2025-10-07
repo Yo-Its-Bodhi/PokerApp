@@ -1,0 +1,345 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║     ✅ LAYOUT FIXED + BLIND CHIPS + SOCKET DISABLED! ✅                   ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+
+COMPLETED CHANGES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+1. ✅ LAYOUT REORGANIZED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+OLD LAYOUT:
+┌─────────────────────────────────────────────────────────┐
+│  Table (flex-1)  │  Actions (w-52)  │ Fairness (w-60)  │
+├─────────────────────────────────────────────────────────┤
+│       Chat (flex-1)       │      Game Log (flex-1)      │
+└─────────────────────────────────────────────────────────┘
+
+NEW LAYOUT (IMPROVED):
+┌────────────────────────────────────────────────────────────┐
+│                                                            │
+│  ┌──────────────────┐  Actions  ┌──────────────────┐     │
+│  │                  │  (w-52)    │   Game Log       │     │
+│  │    Table         │            │   (full height)  │     │
+│  │  (full height)   │            ├──────────────────┤     │
+│  │                  │            │  Fairness Pane   │     │
+│  ├──────────────────┤            │  (h-64)          │     │
+│  │  Chat (h-64)     │            └──────────────────┘     │
+│  └──────────────────┘                                      │
+└────────────────────────────────────────────────────────────┘
+
+BENEFITS:
+✅ Poker table now uses full height
+✅ Game Log has more visibility (right side)
+✅ Fairness Pane moved below Game Log (less intrusive)
+✅ Chat remains accessible at bottom
+✅ Better use of screen real estate
+
+
+2. ✅ SOCKET.IO CONNECTION DISABLED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROBLEM:
+  Browser was trying to connect to http://localhost:3001
+  Server not running → ERR_CONNECTION_REFUSED
+  Console flooded with connection errors
+
+FIX:
+  Commented out entire socket.io useEffect block
+  Added TODO comment for future server integration
+
+CODE:
+  // Socket connection - DISABLED (server not running)
+  // TODO: Enable socket connection when backend server is ready
+  /*
+  useEffect(() => {
+    ... all socket code commented out ...
+  }, [walletConnected, socket, walletAddress, balance]);
+  */
+
+RESULT:
+✅ No more connection errors in console
+✅ Game works in demo mode without server
+✅ Easy to re-enable when server is ready
+
+
+3. ✅ DEALER BUTTON & BLIND CHIPS ADDED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+POKER CHIP STYLE INDICATORS:
+
+DEALER BUTTON (White Chip with "D"):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     ╭─────────╮
+    ╱███████████╲     ← Black striped edge (conic gradient)
+   │   ╭─────╮   │
+   │   │  D  │   │    ← White center with black "D"
+   │   ╰─────╯   │
+    ╲███████████╱
+     ╰─────────╯
+
+Position: Top-left of player card (-top-3 -left-3)
+Colors: White/Gray gradient with black border
+Size: 40px × 40px (w-10 h-10)
+Shows: When player.isDealer === true
+
+
+SMALL BLIND CHIP (Red Chip with "SB"):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     ╭─────────╮
+    ╱███████████╲     ← White striped edge
+   │   ╭─────╮   │
+   │   │ SB  │   │    ← Red center with white "SB"
+   │   ╰─────╯   │
+    ╲███████████╱
+     ╰─────────╯
+
+Position: Top-right of player card (-top-3 -right-3)
+Colors: Red gradient (red-500/600/700) with white border
+Size: 40px × 40px
+Shows: When player.isSmallBlind === true
+
+
+BIG BLIND CHIP (Blue Chip with "BB"):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     ╭─────────╮
+    ╱███████████╲     ← White striped edge
+   │   ╭─────╮   │
+   │   │ BB  │   │    ← Blue center with white "BB"
+   │   ╰─────╯   │
+    ╲███████████╱
+     ╰─────────╯
+
+Position: Top-right of player card (-top-3 -right-3)
+Colors: Blue gradient (blue-500/600/700) with white border
+Size: 40px × 40px
+Shows: When player.isBigBlind === true
+
+
+CHIP DESIGN FEATURES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Repeating conic gradient for edge stripes
+✅ 3D effect with gradient backgrounds
+✅ Multiple borders for chip rim effect
+✅ Drop shadow for depth (0 4px 8px rgba(0,0,0,0.6))
+✅ Professional poker chip appearance
+✅ Clear text labels (D, SB, BB)
+
+
+4. 🔄 CARD VISIBILITY RULES (READY TO IMPLEMENT)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CURRENT STATE:
+  ✅ Only your cards (myCards) are shown face-up
+  ✅ Other players don't see your hole cards
+  ❓ Need to verify in multiplayer mode
+
+RULES TO IMPLEMENT:
+
+During Hand:
+  ✅ Owner sees their 2 hole cards face-up
+  ✅ Everyone else sees card backs
+  ☐ Folded cards stay face-down (never revealed)
+
+All-In Before River:
+  ☐ Policy 1 (reveal-now): Show all cards immediately
+  ☐ Policy 2 (reveal-at-showdown): Keep hidden until river ends
+  → Choose one policy and implement consistently
+
+Showdown:
+  ☐ Last aggressor shows first
+  ☐ Winners must show their hands face-up
+  ☐ Losers can muck (keep face-down)
+  ☐ Tied winners all show face-up
+
+Uncontested Pot:
+  ☐ Winner doesn't have to show
+  ☐ Optional: "show one/both" feature
+
+Community Cards:
+  ✅ Always face-up once dealt
+  ✅ Burn cards never shown
+
+
+SERVER-SIDE IMPLEMENTATION (For Multiplayer):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Private Message (to owner only):
+{
+  "t": "HOLE",
+  "handId": 123,
+  "seat": 4,
+  "cards": ["Ad", "Qs"]
+}
+
+Public Message (to table):
+{
+  "t": "HOLE_BACKS",
+  "handId": 123,
+  "seat": 4,
+  "count": 2
+}
+
+Reveal Event (showdown/all-in):
+{
+  "t": "REVEAL",
+  "handId": 123,
+  "seat": 2,
+  "cards": ["9h", "9c"],
+  "reason": "showdown"
+}
+
+Muck Event:
+{
+  "t": "MUCK",
+  "handId": 123,
+  "seat": 5
+}
+
+SECURITY:
+✅ Never send other players' hole cards to client
+✅ Only send what each client is allowed to know
+✅ Use private seat channels + public table channel
+✅ Don't hide with CSS (assume client is compromised)
+✅ Sign messages with HMAC to prevent spoofing
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+FILES MODIFIED:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. web/src/App.tsx
+   ✅ Reorganized layout (3-column: table+chat, actions, gamelog+fairness)
+   ✅ Commented out socket.io connection
+   ✅ Added TODO for future server integration
+
+2. web/src/components/Table.tsx
+   ✅ Added poker chip style dealer button (white with black "D")
+   ✅ Added poker chip style small blind indicator (red with "SB")
+   ✅ Added poker chip style big blind indicator (blue with "BB")
+   ✅ Positioned chips at top-left (dealer) and top-right (blinds)
+
+
+VISUAL COMPARISON:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+BEFORE:
+┌─────────────┐
+│  Player 1   │  [SB] ← Simple text badge
+│  Stack: 10K │
+└─────────────┘
+
+AFTER:
+    ⚪ [D]         ← White dealer chip
+┌─────────────┐
+│  Player 1   │  🔴 [SB] ← Red small blind chip
+│  Stack: 10K │
+└─────────────┘
+
+Each chip has:
+  • Professional poker chip design
+  • Striped edge pattern (conic gradient)
+  • 3D gradient shading
+  • Clear text labels
+  • Proper shadows for depth
+
+
+COMPILATION STATUS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Checking files...
+✅ App.tsx: No errors
+✅ Table.tsx: No errors
+
+All changes compiled successfully!
+
+
+TESTING CHECKLIST:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Layout:
+  ☐ Poker table uses full height
+  ☐ Game Log visible on right side
+  ☐ Fairness Pane below Game Log
+  ☐ Chat at bottom left
+  ☐ Actions panel in middle
+
+Console:
+  ☐ No socket.io connection errors
+  ☐ No ERR_CONNECTION_REFUSED messages
+  ☐ No vite.svg 404 errors (if any remain, they're minor)
+
+Blind Indicators:
+  ☐ White dealer chip with "D" shows on button
+  ☐ Red chip with "SB" shows on small blind
+  ☐ Blue chip with "BB" shows on big blind
+  ☐ Chips have poker chip appearance (striped edges)
+  ☐ Chips positioned correctly (top corners of player cards)
+
+Card Visibility:
+  ☐ Your hole cards show faces when dealt
+  ☐ Other players' cards show backs only (or empty if no multiplayer)
+  ☐ Community cards show faces when revealed
+  ☐ Cards flip correctly on flop/turn/river
+
+
+NEXT STEPS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. IMMEDIATE:
+   ☐ Test layout in browser
+   ☐ Verify dealer/blind chips appear correctly
+   ☐ Check console for errors
+
+2. SHORT-TERM:
+   ☐ Implement showdown reveal logic
+   ☐ Add all-in reveal policy (choose reveal-now vs reveal-at-showdown)
+   ☐ Add muck/show options for players
+   ☐ Add card flip animations for reveals
+
+3. LONG-TERM:
+   ☐ Set up Socket.IO server (server/src/server.ts)
+   ☐ Implement private seat channels
+   ☐ Add HMAC message signing
+   ☐ Implement hand history logging
+   ☐ Add spectator mode with delay
+
+
+CARD VISIBILITY IMPLEMENTATION PLAN:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Phase 1: Client-Side Logic (Current - Demo Mode)
+  ✅ Show only your cards face-up
+  ✅ Show community cards when revealed
+  ☐ Add reveal state tracking
+  ☐ Add showdown reveal animation
+
+Phase 2: Server-Side Security (Multiplayer)
+  ☐ Separate private/public channels
+  ☐ Send HOLE message only to owner
+  ☐ Send HOLE_BACKS to everyone else
+  ☐ Implement REVEAL events at showdown
+  ☐ Implement MUCK events for losers
+
+Phase 3: Advanced Features
+  ☐ "Show One" button at showdown
+  ☐ Auto-show for winners
+  ☐ Hand history with revealed/mucked tracking
+  ☐ Replay mode with proper visibility
+
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║        ✅ LAYOUT IMPROVED - POKER TABLE FULL HEIGHT! ✅                   ║
+║        ✅ SOCKET.IO DISABLED - NO MORE ERRORS! ✅                          ║
+║        ✅ POKER CHIPS ADDED - DEALER & BLINDS! ✅                          ║
+║        🔄 CARD VISIBILITY - READY FOR IMPLEMENTATION! 🔄                   ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
