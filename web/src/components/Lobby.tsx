@@ -242,7 +242,7 @@ const Lobby: React.FC<LobbyProps> = ({ onSitDown }) => {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 pt-24 sm:pt-28 lg:pt-32 relative" style={{ zIndex: 1 }}>
+      <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 pt-32 sm:pt-36 lg:pt-40 relative" style={{ zIndex: 1 }}>
         {/* 💎 NEON HEADER 💎 */}
         <div className="text-center mb-8 sm:mb-12 lg:mb-16 relative">
           {/* Background glow effects */}
@@ -250,8 +250,8 @@ const Lobby: React.FC<LobbyProps> = ({ onSitDown }) => {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[450px] lg:w-[600px] h-[100px] sm:h-[150px] lg:h-[200px] bg-purple-500/20 blur-[60px] sm:blur-[80px] lg:blur-[100px] animate-pulse" 
                style={{ animationDelay: '1s' }}></div>
           
-          {/* Poker Logo - RESPONSIVE */}
-          <div className="flex justify-center mb-6 sm:mb-8 lg:mb-10">
+          {/* Poker Logo - RESPONSIVE - REDUCED BOTTOM SPACING */}
+          <div className="flex justify-center mb-3 sm:mb-4 lg:mb-5">
             <img src="/poker-logo.png" alt="Poker" className="h-[120px] sm:h-[180px] lg:h-[240px] w-auto object-contain drop-shadow-[0_0_40px_rgba(6,182,212,1)] sm:drop-shadow-[0_0_50px_rgba(6,182,212,1)] lg:drop-shadow-[0_0_60px_rgba(6,182,212,1)] animate-pulse" />
           </div>
           
