@@ -12,12 +12,42 @@ interface WinningHandsPanelProps {
 
 const WinningHandsPanel: React.FC<WinningHandsPanelProps> = ({ recentHands }) => {
   return (
-    <div className="glass-card p-4 h-full overflow-hidden flex flex-col">
-      <h3 className="text-lg font-bold mb-3 text-slate-200 border-b border-slate-700/50 pb-2">
-        🏆 Recent Winners
-      </h3>
+    <div 
+      className="relative backdrop-blur-md shadow-2xl overflow-hidden h-full flex flex-col transition-all duration-500"
+      style={{
+        background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(6, 182, 212, 0.05) 50%, rgba(0, 0, 0, 0.95) 100%)',
+        backdropFilter: 'blur(20px)',
+        border: '2px solid rgba(6, 182, 212, 0.3)',
+        boxShadow: '0 0 30px rgba(6, 182, 212, 0.2), inset 0 0 30px rgba(6, 182, 212, 0.05)'
+      }}
+    >
+      {/* 🔥 EXACT LOBBY CARD STYLE CORNERS 🔥 */}
+      <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-cyan-400 opacity-80 pointer-events-none z-10"
+           style={{ filter: 'drop-shadow(0 0 8px rgba(6, 182, 212, 0.8)) drop-shadow(0 0 12px rgba(6, 182, 212, 0.6))' }}></div>
+      <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-cyan-400 opacity-80 pointer-events-none z-10"
+           style={{ filter: 'drop-shadow(0 0 8px rgba(6, 182, 212, 0.8)) drop-shadow(0 0 12px rgba(6, 182, 212, 0.6))' }}></div>
+      <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-cyan-400 opacity-80 pointer-events-none z-10"
+           style={{ filter: 'drop-shadow(0 0 8px rgba(6, 182, 212, 0.8)) drop-shadow(0 0 12px rgba(6, 182, 212, 0.6))' }}></div>
+      <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-cyan-400 opacity-80 pointer-events-none z-10"
+           style={{ filter: 'drop-shadow(0 0 8px rgba(6, 182, 212, 0.8)) drop-shadow(0 0 12px rgba(6, 182, 212, 0.6))' }}></div>
       
-      <div className="space-y-2 overflow-y-auto flex-1 pr-2 custom-scrollbar">
+      {/* Corner glow dots */}
+      <div className="absolute top-0 left-0 w-2 h-2 bg-cyan-400 rounded-full opacity-80 animate-pulse pointer-events-none z-10"
+           style={{ filter: 'blur(2px) drop-shadow(0 0 8px rgba(6, 182, 212, 1))' }}></div>
+      <div className="absolute top-0 right-0 w-2 h-2 bg-cyan-400 rounded-full opacity-80 animate-pulse pointer-events-none z-10"
+           style={{ filter: 'blur(2px) drop-shadow(0 0 8px rgba(6, 182, 212, 1))' }}></div>
+      <div className="absolute bottom-0 left-0 w-2 h-2 bg-cyan-400 rounded-full opacity-80 animate-pulse pointer-events-none z-10"
+           style={{ filter: 'blur(2px) drop-shadow(0 0 8px rgba(6, 182, 212, 1))' }}></div>
+      <div className="absolute bottom-0 right-0 w-2 h-2 bg-cyan-400 rounded-full opacity-80 animate-pulse pointer-events-none z-10"
+           style={{ filter: 'blur(2px) drop-shadow(0 0 8px rgba(6, 182, 212, 1))' }}></div>
+
+      <div className="flex items-center justify-between p-4 border-b border-white/10">
+        <h3 className="font-semibold text-sm text-slate-200 flex items-center gap-2">
+          <span className="text-slate-400">🏆</span> Recent Winners
+        </h3>
+      </div>
+      <div className="flex-1 p-4">
+        <div className="space-y-2">
         {recentHands.length === 0 ? (
           <p className="text-slate-400 text-sm text-center py-4">
             No hands played yet
@@ -26,26 +56,26 @@ const WinningHandsPanel: React.FC<WinningHandsPanelProps> = ({ recentHands }) =>
           recentHands.slice(0, 10).map((hand, index) => (
             <div
               key={hand.handNumber}
-              className={`p-3 rounded-lg transition-all ${
+              className={`p-3 rounded border-l-2 transition-all ${
                 index === 0
-                  ? 'bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-500/50'
-                  : 'bg-slate-800/40 border border-slate-700/30'
+                  ? 'border-l-amber-400 bg-amber-900/20'
+                  : 'border-l-slate-400 bg-slate-800/30'
               }`}
             >
               <div className="flex justify-between items-start mb-1">
-                <span className="text-xs font-mono text-slate-400">
+                <span className="text-xs font-mono text-slate-500">
                   Hand #{hand.handNumber}
                 </span>
-                <span className="text-xs text-amber-400 font-bold">
+                <span className="text-xs text-amber-300 font-medium">
                   {hand.potSize.toLocaleString()} SHIDO
                 </span>
               </div>
               
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <p className={`font-semibold text-sm ${
+                  <p className={`font-medium text-sm ${
                     hand.winner === 'You' 
-                      ? 'text-green-400' 
+                      ? 'text-emerald-300' 
                       : 'text-slate-300'
                   }`}>
                     {hand.winner === 'You' ? '🎉 You' : '👤 Opponent'}
@@ -75,6 +105,7 @@ const WinningHandsPanel: React.FC<WinningHandsPanelProps> = ({ recentHands }) =>
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

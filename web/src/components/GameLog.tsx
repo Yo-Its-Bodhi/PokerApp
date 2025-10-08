@@ -37,39 +37,71 @@ const GameLog: React.FC<GameLogProps> = ({ gameLog = [] }) => {
   const displayLog = gameLog.length > 0 ? gameLog : mockGameLog;
 
   return (
-    <div className="glass-card p-4 flex flex-col h-full overflow-hidden">
-      <h3 className="font-bold text-base text-brand-electric mb-3 uppercase tracking-wider flex items-center gap-2">
-        <span>🎮</span> Game Log
-      </h3>
-      <div className="flex-1 space-y-1.5 overflow-y-auto overflow-x-hidden text-xs custom-scrollbar pr-2">
+    <div 
+      className="relative backdrop-blur-md shadow-2xl overflow-hidden flex flex-col h-full transition-all duration-500"
+      style={{
+        background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(6, 182, 212, 0.05) 50%, rgba(0, 0, 0, 0.95) 100%)',
+        backdropFilter: 'blur(20px)',
+        border: '2px solid rgba(6, 182, 212, 0.3)',
+        boxShadow: '0 0 30px rgba(6, 182, 212, 0.2), inset 0 0 30px rgba(6, 182, 212, 0.05)'
+      }}
+    >
+      {/* 🔥 EXACT LOBBY CARD STYLE CORNERS 🔥 */}
+      <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-cyan-400 opacity-80 pointer-events-none z-10"
+           style={{ filter: 'drop-shadow(0 0 8px rgba(6, 182, 212, 0.8)) drop-shadow(0 0 12px rgba(6, 182, 212, 0.6))' }}></div>
+      <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-cyan-400 opacity-80 pointer-events-none z-10"
+           style={{ filter: 'drop-shadow(0 0 8px rgba(6, 182, 212, 0.8)) drop-shadow(0 0 12px rgba(6, 182, 212, 0.6))' }}></div>
+      <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-cyan-400 opacity-80 pointer-events-none z-10"
+           style={{ filter: 'drop-shadow(0 0 8px rgba(6, 182, 212, 0.8)) drop-shadow(0 0 12px rgba(6, 182, 212, 0.6))' }}></div>
+      <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-cyan-400 opacity-80 pointer-events-none z-10"
+           style={{ filter: 'drop-shadow(0 0 8px rgba(6, 182, 212, 0.8)) drop-shadow(0 0 12px rgba(6, 182, 212, 0.6))' }}></div>
+      
+      {/* Corner glow dots */}
+      <div className="absolute top-0 left-0 w-2 h-2 bg-cyan-400 rounded-full opacity-80 animate-pulse pointer-events-none z-10"
+           style={{ filter: 'blur(2px) drop-shadow(0 0 8px rgba(6, 182, 212, 1))' }}></div>
+      <div className="absolute top-0 right-0 w-2 h-2 bg-cyan-400 rounded-full opacity-80 animate-pulse pointer-events-none z-10"
+           style={{ filter: 'blur(2px) drop-shadow(0 0 8px rgba(6, 182, 212, 1))' }}></div>
+      <div className="absolute bottom-0 left-0 w-2 h-2 bg-cyan-400 rounded-full opacity-80 animate-pulse pointer-events-none z-10"
+           style={{ filter: 'blur(2px) drop-shadow(0 0 8px rgba(6, 182, 212, 1))' }}></div>
+      <div className="absolute bottom-0 right-0 w-2 h-2 bg-cyan-400 rounded-full opacity-80 animate-pulse pointer-events-none z-10"
+           style={{ filter: 'blur(2px) drop-shadow(0 0 8px rgba(6, 182, 212, 1))' }}></div>
+
+      <div className="flex items-center justify-between p-4 border-b border-white/10 flex-shrink-0">
+        <h3 className="font-semibold text-sm text-slate-200 flex items-center gap-2">
+          <span className="text-slate-400">🎮</span> Game Log
+        </h3>
+      </div>
+      <div className="flex-1 p-4 overflow-y-auto min-h-0">
+        <div className="space-y-1.5 text-sm">
         {displayLog.map((log, i) => (
           <div 
             key={i} 
-            className={`pl-2 py-1 rounded border-l-2 transition-all break-words ${
+            className={`pl-3 py-2 rounded border-l-2 transition-all break-words ${
               log.type === 'street-change'
-                ? 'border-purple-500 bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 font-bold text-center py-2 shadow-lg' 
+                ? 'border-purple-400 bg-purple-900/20 text-purple-300 font-medium text-center py-2' 
                 : log.type === 'flop' || log.type === 'turn' || log.type === 'river' || log.type === 'deal' 
                 ? 'border-brand-gold bg-brand-gold/10 text-brand-gold font-semibold' 
                 : log.type === 'raise' || log.type === 'bet'
-                ? 'border-brand-magenta bg-brand-magenta/10 text-brand-magenta'
+                ? 'border-amber-400 bg-amber-900/20 text-amber-300'
                 : log.type === 'call'
-                ? 'border-brand-electric bg-brand-electric/10 text-brand-electric'
+                ? 'border-blue-400 bg-blue-900/20 text-blue-300'
                 : log.type === 'fold'
-                ? 'border-red-500 bg-red-500/10 text-red-400'
+                ? 'border-red-400 bg-red-900/20 text-red-300'
                 : log.type === 'system'
-                ? 'border-brand-cyan bg-brand-cyan/10 text-brand-cyan animate-pulse'
-                : 'border-brand-cyan/30 text-brand-text'
+                ? 'border-orange-400 bg-orange-900/20 text-orange-300'
+                : 'border-slate-400 bg-slate-800/30 text-slate-300'
             }`}
           >
             <div className="flex justify-between items-start gap-2">
-              <span className="font-medium break-words flex-1 min-w-0">
+              <span className="font-medium break-words flex-1 min-w-0 text-sm">
                 {log.action}
               </span>
-              <span className="text-brand-text-dark text-[10px] whitespace-nowrap opacity-60 flex-shrink-0">{log.timestamp}</span>
+              <span className="text-slate-500 text-sm whitespace-nowrap opacity-60 flex-shrink-0">{log.timestamp}</span>
             </div>
           </div>
         ))}
         <div ref={gameLogEndRef} />
+      </div>
       </div>
     </div>
   );

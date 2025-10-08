@@ -8,6 +8,9 @@ interface CardProps {
   size?: 'small' | 'medium' | 'large';
   animationDelay?: number;
   showFlipAnimation?: boolean;
+  style?: React.CSSProperties;
+  disableDealAnimation?: boolean;
+  theme?: 'classic' | 'executive' | 'dark' | 'light';
 }
 
 const Card: React.FC<CardProps> = ({ 
@@ -17,7 +20,10 @@ const Card: React.FC<CardProps> = ({
   faceDown = false,
   size = 'medium',
   animationDelay = 0,
-  showFlipAnimation = false
+  showFlipAnimation = false,
+  style,
+  disableDealAnimation = false,
+  theme = 'classic'
 }) => {
   const sizeClasses = {
     small: 'w-14 h-20',
@@ -33,10 +39,11 @@ const Card: React.FC<CardProps> = ({
 
   return (
     <div 
-      className={`card-container ${sizeClasses[size]}`}
+      className={`${disableDealAnimation ? 'card-no-animation' : 'card-container'} ${sizeClasses[size]}`}
       style={{ 
         animationDelay: `${animationDelay}s`,
-        perspective: '1000px'
+        perspective: '1000px',
+        ...style
       }}
     >
       <div className={`card-flipper ${faceDown ? 'is-flipped' : ''}`}>
@@ -85,21 +92,37 @@ const Card: React.FC<CardProps> = ({
 
         {/* Card Front */}
         <div className="card-face card-front">
-          <div className="w-full h-full flex flex-col items-center justify-center bg-white shadow-lg border-2 border-gray-300 rounded-lg">
+          <div className={`w-full h-full flex flex-col items-center justify-center shadow-lg border-2 rounded-lg ${
+            theme === 'executive' 
+              ? 'bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-yellow-600/40' 
+              : 'bg-white border-gray-300'
+          }`}>
             {/* Top rank only (no small suit) */}
-            <div className={`absolute top-1 left-1 ${fontSizes[size]} font-bold leading-none`} style={{ color: color === 'red' ? '#dc2626' : '#1f2937' }}>
+            <div className={`absolute top-1 left-1 ${fontSizes[size]} font-bold leading-none`} style={{ 
+              color: theme === 'executive' 
+                ? (color === 'red' ? '#ef4444' : '#eab308') // Red hearts/diamonds, gold spades/clubs
+                : (color === 'red' ? '#dc2626' : '#1f2937') 
+            }}>
               <div>{rank}</div>
             </div>
             
             {/* Center suit symbol - Smaller for hole cards to prevent squashing */}
-            <div className={`font-bold`} style={{ color: color === 'red' ? '#dc2626' : '#1f2937' }}>
+            <div className={`font-bold`} style={{ 
+              color: theme === 'executive' 
+                ? (color === 'red' ? '#ef4444' : '#eab308') // Red hearts/diamonds, gold spades/clubs
+                : (color === 'red' ? '#dc2626' : '#1f2937')
+            }}>
               <div className={`${size === 'small' ? 'text-3xl' : size === 'medium' ? 'text-5xl' : 'text-6xl'}`}>
                 {suit}
               </div>
             </div>
             
             {/* Bottom rank only (rotated, no small suit) */}
-            <div className={`absolute bottom-1 right-1 ${fontSizes[size]} font-bold leading-none rotate-180`} style={{ color: color === 'red' ? '#dc2626' : '#1f2937' }}>
+            <div className={`absolute bottom-1 right-1 ${fontSizes[size]} font-bold leading-none rotate-180`} style={{ 
+              color: theme === 'executive' 
+                ? (color === 'red' ? '#ef4444' : '#eab308') // Red hearts/diamonds, gold spades/clubs
+                : (color === 'red' ? '#dc2626' : '#1f2937')
+            }}>
               <div>{rank}</div>
             </div>
           </div>

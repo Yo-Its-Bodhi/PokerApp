@@ -1,10 +1,10 @@
 /**
  * PLAYER TIMER COMPONENT
  * 
- * Dual-ring timer visualization:
- * - Outer ring: Base turn timer
- * - Inner ring: Time bank
- * - Pulsing effects and color transitions
+ * Single ring timer that wraps around the avatar border:
+ * - Teal (20s+): Full time remaining
+ * - Yellow (10-5s): Warning zone
+ * - Red (5-0s): Critical zone with pulsing rings
  */
 
 import React, { useEffect, useState } from 'react';
@@ -30,142 +30,108 @@ const PlayerTimer: React.FC<PlayerTimerProps> = ({
   usingTimeBank,
   onRequestTimeBank
 }) => {
-  const [animationKey, setAnimationKey] = useState(0);
-
-  useEffect(() => {
-    // Trigger re-render for smooth animation
-    if (isActive) {
-      setAnimationKey(prev => prev + 1);
-    }
-  }, [isActive, usingTimeBank]);
-
   if (!isActive) return null;
 
-  // Calculate progress percentages
-  const baseProgress = (baseTimeMs / baseMaxMs) * 100;
-  const timeBankProgress = (timeBankMs / timeBankMaxMs) * 100;
+  // Total time (base + time bank if using)
+  const currentTimeMs = usingTimeBank ? timeBankMs : baseTimeMs;
+  const maxTimeMs = usingTimeBank ? timeBankMaxMs : baseMaxMs;
+  const timeInSeconds = currentTimeMs / 1000;
+  
+  // Calculate progress percentage (0-100, where 100 is full time)
+  const progress = (currentTimeMs / maxTimeMs) * 100;
 
-  // Determine colors based on time remaining
-  const getTimerColor = (progressPercent: number, isBank: boolean) => {
-    if (isBank) {
-      // Time bank: red colors
-      if (progressPercent > 50) return '#ff0088'; // Magenta
-      if (progressPercent > 25) return '#ff0044';
-      return '#ff0000'; // Red
+  // Color logic based on seconds remaining:
+  // Teal: 20+ seconds
+  // Yellow: 5-10 seconds  
+  // Red: 0-5 seconds
+  const getTimerColor = () => {
+    if (timeInSeconds > 10) {
+      return '#14b8a6'; // Teal
+    } else if (timeInSeconds > 5) {
+      return '#eab308'; // Yellow
     } else {
-      // Base timer: cyan to yellow to red
-      if (progressPercent > 50) return '#00ffff'; // Cyan
-      if (progressPercent > 25) return '#ffff00'; // Yellow
-      return '#ff8800'; // Orange
+      return '#ef4444'; // Red
     }
   };
 
-  const baseColor = usingTimeBank ? '#444' : getTimerColor(baseProgress, false);
-  const timeBankColor = getTimerColor(timeBankProgress, true);
+  const timerColor = getTimerColor();
+  const isRedZone = timeInSeconds <= 5;
 
-  // SVG circle parameters (reduced size)
-  const size = 60;
-  const center = size / 2;
-  const outerRadius = 26;
-  const innerRadius = 20;
+  // SVG circle parameters - size to perfectly wrap around avatar
+  // Avatar is 80px (w-20 h-20), we need to wrap around it perfectly
+  const size = 87; // Reduced by 1px (88 * 0.99 ≈ 87)
+  const center = size / 2; // 43.5
   const strokeWidth = 4;
+  const radius = 41.5; // Adjusted radius to match smaller size
 
   // Calculate stroke dash for circular progress
-  const getCircumference = (radius: number) => 2 * Math.PI * radius;
-  const outerCircumference = getCircumference(outerRadius);
-  const innerCircumference = getCircumference(innerRadius);
-
-  const outerDashOffset = outerCircumference * (1 - baseProgress / 100);
-  const innerDashOffset = innerCircumference * (1 - timeBankProgress / 100);
-
-  const canUseTimeBank = !usingTimeBank && timeBankMs > 0 && baseTimeMs < 3000;
+  const circumference = 2 * Math.PI * radius;
+  const dashOffset = circumference * (1 - progress / 100);
 
   return (
-    <div className="relative flex flex-col items-center gap-2">
-      {/* Dual Ring Timer SVG */}
-      <div className="relative">
-        <svg width={size} height={size} className="transform -rotate-90">
-          {/* Outer ring background */}
-          <circle
-            cx={center}
-            cy={center}
-            r={outerRadius}
-            fill="none"
-            stroke="#1a1a2e"
-            strokeWidth={strokeWidth}
+    <>
+      {/* Single ring timer border that wraps the avatar */}
+      <svg 
+        width={size} 
+        height={size} 
+        className="absolute transform -rotate-90 pointer-events-none"
+        style={{ 
+          zIndex: 100,
+          left: '-4.5px',
+          top: '-4.5px'
+        }}
+      >
+        {/* Background ring (dark) */}
+        <circle
+          cx={center}
+          cy={center}
+          r={radius}
+          fill="none"
+          stroke="rgba(0, 0, 0, 0.5)"
+          strokeWidth={strokeWidth}
+        />
+        
+        {/* Progress ring (colored) */}
+        <circle
+          cx={center}
+          cy={center}
+          r={radius}
+          fill="none"
+          stroke={timerColor}
+          strokeWidth={strokeWidth}
+          strokeDasharray={circumference}
+          strokeDashoffset={dashOffset}
+          strokeLinecap="round"
+          className="transition-all duration-100"
+          style={{
+            filter: `drop-shadow(0 0 6px ${timerColor})`
+          }}
+        />
+      </svg>
+
+      {/* Pulsing ring effect for red zone (5 seconds or less) */}
+      {isRedZone && (
+        <>
+          <div 
+            className="absolute inset-0 rounded-full border-4 animate-ping pointer-events-none"
+            style={{ 
+              borderColor: timerColor,
+              animationDuration: '1s',
+              zIndex: 99
+            }} 
           />
-          
-          {/* Outer ring progress (base timer) */}
-          <circle
-            cx={center}
-            cy={center}
-            r={outerRadius}
-            fill="none"
-            stroke={baseColor}
-            strokeWidth={strokeWidth}
-            strokeDasharray={outerCircumference}
-            strokeDashoffset={outerDashOffset}
-            strokeLinecap="round"
-            className={`transition-all duration-100 ${usingTimeBank ? '' : 'drop-shadow-[0_0_8px_currentColor]'}`}
-            style={{
-              filter: usingTimeBank ? 'none' : `drop-shadow(0 0 8px ${baseColor})`
-            }}
+          <div 
+            className="absolute inset-0 rounded-full border-4 animate-ping pointer-events-none"
+            style={{ 
+              borderColor: timerColor,
+              animationDuration: '1s',
+              animationDelay: '0.5s',
+              zIndex: 99
+            }} 
           />
-
-          {/* Inner ring background */}
-          <circle
-            cx={center}
-            cy={center}
-            r={innerRadius}
-            fill="none"
-            stroke="#1a1a2e"
-            strokeWidth={strokeWidth}
-          />
-          
-          {/* Inner ring progress (time bank) */}
-          {timeBankMs > 0 && (
-            <circle
-              cx={center}
-              cy={center}
-              r={innerRadius}
-              fill="none"
-              stroke={timeBankColor}
-              strokeWidth={strokeWidth}
-              strokeDasharray={innerCircumference}
-              strokeDashoffset={innerDashOffset}
-              strokeLinecap="round"
-              className={`transition-all duration-100 ${usingTimeBank ? 'animate-pulse drop-shadow-[0_0_12px_currentColor]' : ''}`}
-              style={{
-                filter: usingTimeBank ? `drop-shadow(0 0 12px ${timeBankColor})` : 'none'
-              }}
-            />
-          )}
-
-          {/* Center text */}
-          <text
-            x={center}
-            y={center + 4}
-            textAnchor="middle"
-            fill="#00ffff"
-            fontSize="16"
-            fontWeight="bold"
-            className="font-mono transform rotate-90"
-            style={{ transformOrigin: 'center' }}
-          >
-            {Math.ceil((usingTimeBank ? timeBankMs : baseTimeMs) / 1000)}
-          </text>
-        </svg>
-
-        {/* Flash border when switching to time bank */}
-        {usingTimeBank && (
-          <div className="absolute inset-0 rounded-full border-4 border-red-500 animate-ping pointer-events-none" />
-        )}
-      </div>
-
-
-
-      {/* Status text - hidden to save space */}
-    </div>
+        </>
+      )}
+    </>
   );
 };
 

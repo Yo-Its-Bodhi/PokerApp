@@ -2,22 +2,21 @@
 
 interface LobbyProps {
   onSitDown: (tableId: string, seat: number) => void;
+  playerCount: number;
+  setPlayerCount: (count: number) => void;
 }
 
-const tables = [
-  { id: '1', name: 'Neon Holdem', stakes: '1k/2k', players: 4, maxPlayers: 6, penetration: 75 },
-  { id: '2', name: 'River of Dreams', stakes: '5k/10k', players: 2, maxPlayers: 6, penetration: 40 },
-  { id: '3', name: 'All-in Arena', stakes: '10k/20k', players: 6, maxPlayers: 6, penetration: 90 },
-  { id: '4', name: 'Diamond VIP', stakes: '50k/100k', players: 3, maxPlayers: 6, penetration: 60 },
-  { id: '5', name: 'Midnight Express', stakes: '2k/4k', players: 5, maxPlayers: 6, penetration: 85 },
-  { id: '6', name: 'High Roller', stakes: '100k/200k', players: 1, maxPlayers: 6, penetration: 20 },
-];
-
-const Lobby: React.FC<LobbyProps> = ({ onSitDown }) => {
-  const handleJoinTable = (e: React.MouseEvent, tableId: string) => {
+const Lobby: React.FC<LobbyProps> = ({ onSitDown, playerCount, setPlayerCount }) => {
+  const handleJoinTable = (e: React.MouseEvent) => {
     e.preventDefault();
-    console.log('handleJoinTable called for table:', tableId);
-    onSitDown(tableId, 0);
+    console.log('handleJoinTable called with player count:', playerCount);
+    onSitDown('main-table', 0);
+  };
+
+  const handlePlayerCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const count = parseInt(e.target.value);
+    console.log('Player count changed to:', count);
+    setPlayerCount(count);
   };
 
   return (
@@ -284,16 +283,14 @@ const Lobby: React.FC<LobbyProps> = ({ onSitDown }) => {
             <div className="absolute bottom-0 right-0 w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 border-b-2 border-r-2 border-cyan-400"></div>
           </div>
         </div>
-        {/* 🎴 TABLE GRID - CYBERPUNK GLASS CARDS - RESPONSIVE 🎴 */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-          {tables.map(table => (
-            <div 
-              key={table.id} 
-              className="group relative p-4 sm:p-5 lg:p-6 flex flex-col justify-between transition-all duration-500 transform hover:scale-105 hover:-translate-y-2 sm:hover:-translate-y-3 cursor-pointer"
-              style={{
-                background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(6, 182, 212, 0.05) 50%, rgba(0, 0, 0, 0.95) 100%)',
-                backdropFilter: 'blur(20px)',
-                border: '2px solid rgba(6, 182, 212, 0.3)',
+        {/* 🎴 TABLE SETUP CARD - AI OPPONENT SELECTOR 🎴 */}
+        <div className="flex justify-center">
+          <div 
+            className="group relative p-6 sm:p-8 lg:p-10 flex flex-col justify-between transition-all duration-500 max-w-2xl w-full"
+            style={{
+              background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(6, 182, 212, 0.05) 50%, rgba(0, 0, 0, 0.95) 100%)',
+              backdropFilter: 'blur(20px)',
+              border: '2px solid rgba(6, 182, 212, 0.3)',
                 boxShadow: '0 0 30px rgba(6, 182, 212, 0.2), inset 0 0 30px rgba(6, 182, 212, 0.05)'
               }}
               onMouseEnter={(e) => {
@@ -316,50 +313,83 @@ const Lobby: React.FC<LobbyProps> = ({ onSitDown }) => {
                 <div className="absolute w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-scan"></div>
               </div>
               
-              {/* Table Name - RESPONSIVE */}
-              <h3 className="font-black text-xl sm:text-2xl lg:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-400 group-hover:from-cyan-200 group-hover:to-pink-400 mb-3 sm:mb-4 transition-all duration-300" 
+              {/* Table Name - RESPONSIVE - ORIGINAL SIZE */}
+              <h3 className="font-black text-2xl sm:text-3xl lg:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-400 group-hover:from-cyan-200 group-hover:to-pink-400 mb-6 sm:mb-8 text-center transition-all duration-300" 
                   style={{ textShadow: '0 0 15px rgba(6, 182, 212, 0.8)' }}>
-                {table.name}
+                SHIDO POKER
               </h3>
               
-              {/* Stats Grid - RESPONSIVE */}
-              <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4">
+              {/* Stats Grid - RESPONSIVE - ORIGINAL SIZE */}
+              <div className="space-y-4 sm:space-y-6 mb-6 sm:mb-8">
                 {/* Stakes */}
-                <div className="flex justify-between items-center py-2 sm:py-3 border-b-2 border-cyan-500/30 group-hover:border-cyan-500/60 transition-all duration-300">
-                  <span className="text-[10px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] text-cyan-400/60 font-bold">STAKES</span>
-                  <span className="font-black text-base sm:text-lg text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)] sm:drop-shadow-[0_0_10px_rgba(6,182,212,0.8)]">{table.stakes}</span>
+                <div className="flex justify-between items-center py-3 sm:py-4 border-b-2 border-cyan-500/30 group-hover:border-cyan-500/60 transition-all duration-300">
+                  <span className="text-xs sm:text-sm uppercase tracking-[0.2em] text-cyan-400/60 font-bold">STAKES</span>
+                  <span className="font-black text-xl sm:text-2xl text-cyan-400 drop-shadow-[0_0_10px_rgba(6,182,212,0.8)]">5k/10k</span>
                 </div>
                 
-                {/* Players */}
-                <div className="flex justify-between items-center py-2 sm:py-3 border-b-2 border-purple-500/30 group-hover:border-purple-500/60 transition-all duration-300">
-                  <span className="text-[10px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] text-purple-400/60 font-bold">PLAYERS</span>
-                  <span className="font-black text-base sm:text-lg text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)] sm:drop-shadow-[0_0_10px_rgba(168,85,247,0.8)]">{table.players}/{table.maxPlayers}</span>
-                </div>
-                
-                {/* Activity Bar - RESPONSIVE */}
-                <div className="py-2 sm:py-3">
-                  <div className="flex justify-between items-center mb-1.5 sm:mb-2">
-                    <span className="text-[10px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] text-pink-400/60 font-bold">ACTIVITY</span>
-                    <span className="text-[10px] sm:text-xs font-bold text-pink-400">{table.penetration}%</span>
+                {/* Player Count Slider */}
+                <div className="py-3 sm:py-4">
+                  <div className="flex justify-between items-center mb-3 sm:mb-4">
+                    <span className="text-xs sm:text-sm uppercase tracking-[0.2em] text-purple-400/60 font-bold">AI OPPONENTS</span>
+                    <span className="font-black text-xl sm:text-2xl text-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.8)]">{playerCount - 1}</span>
                   </div>
-                  <div className="w-full bg-black border-2 border-cyan-500/40 rounded-sm h-2.5 sm:h-3 overflow-hidden relative group-hover:border-cyan-500/70 transition-all duration-300">
-                    <div 
-                      className="h-full relative"
-                      style={{ 
-                        width: `${table.penetration}%`,
-                        background: 'linear-gradient(90deg, #06b6d4, #a855f7, #ec4899, #06b6d4)',
-                        backgroundSize: '200% 100%',
-                        animation: 'shimmer 2s linear infinite',
-                        boxShadow: '0 0 15px rgba(6, 182, 212, 0.6)'
+                  
+                  {/* Slider - ORIGINAL SIZE */}
+                  <div className="relative">
+                    <input 
+                      type="range" 
+                      min="2" 
+                      max="6" 
+                      value={playerCount} 
+                      onChange={handlePlayerCountChange}
+                      className="w-full h-3 bg-slate-700/50 rounded-full appearance-none cursor-pointer 
+                                 [&::-webkit-slider-thumb]:appearance-none 
+                                 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 
+                                 [&::-webkit-slider-thumb]:rounded-full 
+                                 [&::-webkit-slider-thumb]:bg-gradient-to-br [&::-webkit-slider-thumb]:from-cyan-400 [&::-webkit-slider-thumb]:to-purple-500 
+                                 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-cyan-300
+                                 [&::-webkit-slider-thumb]:shadow-[0_0_20px_rgba(6,182,212,0.8)]
+                                 [&::-webkit-slider-thumb]:hover:shadow-[0_0_30px_rgba(6,182,212,1)]
+                                 [&::-webkit-slider-thumb]:transition-all
+                                 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6
+                                 [&::-moz-range-thumb]:rounded-full
+                                 [&::-moz-range-thumb]:bg-gradient-to-br [&::-moz-range-thumb]:from-cyan-400 [&::-moz-range-thumb]:to-purple-500
+                                 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-cyan-300
+                                 [&::-moz-range-thumb]:shadow-[0_0_20px_rgba(6,182,212,0.8)]
+                                 hover:[&::-moz-range-thumb]:shadow-[0_0_30px_rgba(6,182,212,1)]
+                                 transition-all"
+                      style={{
+                        background: `linear-gradient(to right, 
+                          rgba(6, 182, 212, 0.4) 0%, 
+                          rgba(6, 182, 212, 0.4) ${((playerCount - 2) / 4) * 100}%, 
+                          rgba(71, 85, 105, 0.5) ${((playerCount - 2) / 4) * 100}%, 
+                          rgba(71, 85, 105, 0.5) 100%)`
                       }}
-                    ></div>
+                    />
+                    
+                    {/* Player count markers */}
+                    <div className="flex justify-between mt-2 px-1">
+                      {[2, 3, 4, 5, 6].map(num => (
+                        <span 
+                          key={num} 
+                          className={`text-xs font-bold transition-all duration-300 ${
+                            playerCount === num 
+                              ? 'text-cyan-400 scale-110' 
+                              : 'text-slate-500'
+                          }`}
+                          style={playerCount === num ? { textShadow: '0 0 8px rgba(6, 182, 212, 0.8)' } : {}}
+                        >
+                          {num}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
               
               {/* JACK IN Button - RESPONSIVE */}
               <button
-                onClick={(e) => handleJoinTable(e, table.id)}
+                onClick={handleJoinTable}
                 className="relative w-full py-3 sm:py-4 px-4 sm:px-6 font-black text-sm sm:text-base lg:text-lg uppercase tracking-[0.2em] sm:tracking-[0.25em] lg:tracking-[0.3em] transition-all duration-300 overflow-hidden group-hover:tracking-[0.25em] sm:group-hover:tracking-[0.3em] lg:group-hover:tracking-[0.35em]"
                 style={{
                   background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(168, 85, 247, 0.2))',
@@ -389,7 +419,6 @@ const Lobby: React.FC<LobbyProps> = ({ onSitDown }) => {
                 <span className="relative z-10">// JACK IN //</span>
               </button>
             </div>
-          ))}
         </div>
       </div>
     </div>

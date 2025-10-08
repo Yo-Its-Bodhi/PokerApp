@@ -122,26 +122,55 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ onClose, currentPlayerStats }
   };
 
   const tabStyles = "px-4 py-2 font-bold transition-all duration-300 border-b-2";
-  const activeTabStyles = "border-yellow-400 text-yellow-400 bg-yellow-400/10";
-  const inactiveTabStyles = "border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-600";
+  const activeTabStyles = "border-cyan-400 text-cyan-400 bg-cyan-400/10";
+  const inactiveTabStyles = "border-transparent text-gray-400 hover:text-cyan-300 hover:border-cyan-600";
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border-2 border-yellow-500/30 shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div className="relative max-w-4xl w-full max-h-[90vh] overflow-hidden transition-all duration-500"
+           style={{
+             background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(6, 182, 212, 0.05) 50%, rgba(0, 0, 0, 0.95) 100%)',
+             backdropFilter: 'blur(20px)',
+             border: '2px solid rgba(6, 182, 212, 0.3)',
+             boxShadow: '0 0 30px rgba(6, 182, 212, 0.2), inset 0 0 30px rgba(6, 182, 212, 0.05)'
+           }}>
+        {/* 🔥 EXACT LOBBY CARD STYLE CORNERS 🔥 */}
+        <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-cyan-400 opacity-80 pointer-events-none z-50"
+             style={{ filter: 'drop-shadow(0 0 8px rgba(6, 182, 212, 0.8)) drop-shadow(0 0 12px rgba(6, 182, 212, 0.6))' }}></div>
+        <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-cyan-400 opacity-80 pointer-events-none z-50"
+             style={{ filter: 'drop-shadow(0 0 8px rgba(6, 182, 212, 0.8)) drop-shadow(0 0 12px rgba(6, 182, 212, 0.6))' }}></div>
+        <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 border-cyan-400 opacity-80 pointer-events-none z-50"
+             style={{ filter: 'drop-shadow(0 0 8px rgba(6, 182, 212, 0.8)) drop-shadow(0 0 12px rgba(6, 182, 212, 0.6))' }}></div>
+        <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-cyan-400 opacity-80 pointer-events-none z-50"
+             style={{ filter: 'drop-shadow(0 0 8px rgba(6, 182, 212, 0.8)) drop-shadow(0 0 12px rgba(6, 182, 212, 0.6))' }}></div>
+        
+        {/* Corner glow dots */}
+        <div className="absolute top-0 left-0 w-3 h-3 bg-cyan-400 rounded-full opacity-80 animate-pulse pointer-events-none z-50"
+             style={{ filter: 'blur(2px) drop-shadow(0 0 8px rgba(6, 182, 212, 1))' }}></div>
+        <div className="absolute top-0 right-0 w-3 h-3 bg-cyan-400 rounded-full opacity-80 animate-pulse pointer-events-none z-50"
+             style={{ filter: 'blur(2px) drop-shadow(0 0 8px rgba(6, 182, 212, 1))' }}></div>
+        <div className="absolute bottom-0 left-0 w-3 h-3 bg-cyan-400 rounded-full opacity-80 animate-pulse pointer-events-none z-50"
+             style={{ filter: 'blur(2px) drop-shadow(0 0 8px rgba(6, 182, 212, 1))' }}></div>
+        <div className="absolute bottom-0 right-0 w-3 h-3 bg-cyan-400 rounded-full opacity-80 animate-pulse pointer-events-none z-50"
+             style={{ filter: 'blur(2px) drop-shadow(0 0 8px rgba(6, 182, 212, 1))' }}></div>
+        
         {/* Header */}
-        <div className="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 p-6 relative overflow-hidden">
-          <div className="absolute inset-0 bg-black/20"></div>
+        <div className="relative p-6 overflow-hidden" style={{
+          background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(168, 85, 247, 0.15))',
+          borderBottom: '2px solid rgba(6, 182, 212, 0.3)'
+        }}>
+          <div className="absolute inset-0 bg-black/30"></div>
           <div className="relative flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="text-4xl">🏆</div>
               <div>
-                <h2 className="text-3xl font-black text-white drop-shadow-lg">LEADERBOARD</h2>
-                <p className="text-yellow-100 text-sm font-semibold">Hall of Poker Legends</p>
+                <h2 className="text-3xl font-black text-cyan-400 drop-shadow-lg" style={{ textShadow: '0 0 10px rgba(6, 182, 212, 0.8)' }}>LEADERBOARD</h2>
+                <p className="text-cyan-200 text-sm font-semibold">Hall of Poker Legends</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="text-white hover:text-yellow-200 transition-colors text-3xl font-bold hover:rotate-90 transition-transform duration-300"
+              className="text-cyan-300 hover:text-cyan-100 transition-colors text-3xl font-bold hover:rotate-90 transition-transform duration-300"
             >
               ×
             </button>
@@ -149,7 +178,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ onClose, currentPlayerStats }
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-700 bg-slate-900/50 overflow-x-auto">
+        <div className="flex border-b border-slate-700 bg-slate-950/50 overflow-x-auto">
           <button
             onClick={() => setActiveTab('won')}
             className={`${tabStyles} ${activeTab === 'won' ? activeTabStyles : inactiveTabStyles}`}
@@ -194,10 +223,10 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ onClose, currentPlayerStats }
                   key={player.address}
                   className={`flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-300 ${
                     isCurrentPlayer
-                      ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-500/50 shadow-lg shadow-yellow-500/20'
+                      ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border-cyan-500/50 shadow-lg shadow-cyan-500/20'
                       : index === 0
-                      ? 'bg-gradient-to-r from-yellow-600/10 to-yellow-500/10 border-yellow-500/30'
-                      : 'bg-slate-800/50 border-slate-700/50 hover:border-slate-600 hover:bg-slate-800/80'
+                      ? 'bg-gradient-to-r from-cyan-600/10 to-cyan-500/10 border-cyan-500/30'
+                      : 'bg-slate-800/50 border-slate-700/50 hover:border-cyan-600 hover:bg-slate-800/80'
                   }`}
                 >
                   {/* Rank */}
@@ -212,7 +241,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ onClose, currentPlayerStats }
                       <div className="font-bold text-white text-lg flex items-center gap-2">
                         {player.alias}
                         {isCurrentPlayer && (
-                          <span className="text-xs bg-yellow-500 text-black px-2 py-0.5 rounded-full font-black">
+                          <span className="text-xs bg-cyan-500 text-black px-2 py-0.5 rounded-full font-black">
                             YOU
                           </span>
                         )}
@@ -226,7 +255,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ onClose, currentPlayerStats }
                   {/* Main Stat */}
                   <div className="text-right">
                     <div className={`font-black text-xl ${
-                      index === 0 ? 'text-yellow-400' : 
+                      index === 0 ? 'text-cyan-400' : 
                       index === 1 ? 'text-gray-300' : 
                       index === 2 ? 'text-orange-400' : 
                       'text-white'
@@ -242,7 +271,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ onClose, currentPlayerStats }
 
         {/* Footer Stats */}
         {currentPlayerStats && (
-          <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-6 border-t-2 border-yellow-500/30">
+          <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-6 border-t-2 border-cyan-500/30">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div>
                 <div className="text-gray-400 text-xs uppercase font-bold mb-1">Net Profit</div>
@@ -268,7 +297,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ onClose, currentPlayerStats }
               </div>
               <div>
                 <div className="text-gray-400 text-xs uppercase font-bold mb-1">Hands</div>
-                <div className="text-2xl font-black text-yellow-400">
+                <div className="text-2xl font-black text-cyan-400">
                   {currentPlayerStats.handsPlayed}
                 </div>
               </div>

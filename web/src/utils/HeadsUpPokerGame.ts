@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // @ts-ignore
 import { Hand } from 'pokersolver';
-import { playWinPot } from './audioSystem';
+import { playWinPot, playFold, playCheck, playChipBet, playRaise, audioSystem } from './audioSystem';
 
 interface DemoGameState {
   players: any[];
@@ -48,6 +48,7 @@ export class HeadsUpPokerGame {
   private state: DemoGameState;
   private onStateUpdate: (state: DemoGameState) => void;
   private onTurnStart?: (playerId: number) => void; // Callback when a turn starts (for timer)
+  private onHandComplete?: (handData: { handNumber: number; winner: string; handType: string; potSize: number; timestamp: number }) => void;
   private deck: number[]; // Persistent deck for the hand
   private initialDealerSet: boolean = false; // Track if initial dealer determined
   private handCount: number = 0; // Track number of hands played
@@ -96,9 +97,15 @@ export class HeadsUpPokerGame {
     return allMatched && allActed;
   }
 
-  constructor(playerSeat: number, onStateUpdate: (state: DemoGameState) => void, onTurnStart?: (playerId: number) => void) {
+  constructor(
+    playerSeat: number, 
+    onStateUpdate: (state: DemoGameState) => void, 
+    onTurnStart?: (playerId: number) => void,
+    onHandComplete?: (handData: { handNumber: number; winner: string; handType: string; potSize: number; timestamp: number }) => void
+  ) {
     this.onStateUpdate = onStateUpdate;
     this.onTurnStart = onTurnStart;
+    this.onHandComplete = onHandComplete;
     this.deck = [];
     this.playerSeat = playerSeat;
     this.opponentSeat = playerSeat === 1 ? 2 : 1; // Keep for compatibility but use proper 4-player logic
@@ -152,8 +159,8 @@ export class HeadsUpPokerGame {
       street: 'preflop',
       currentPlayer: playerSeat === 1 ? 1 : 4, // SB acts first preflop
       dealerButton: 1,
-      smallBlind: 500,
-      bigBlind: 1000,
+      smallBlind: 5000,
+      bigBlind: 10000,
       myBet: 0,
       opponentBet: 0,
       currentBet: 0,
@@ -658,25 +665,30 @@ export class HeadsUpPokerGame {
       this.opponentHasActed = false; // Opponent must respond to raise/bet
     }
 
-    // Format log message properly based on action
+    // Format log message properly based on action and play sounds
     let logMessage = '';
     switch (action) {
       case 'call':
         const actualCallAmount = this.state.opponentBet - this.state.myBet;
         logMessage = `You call ${actualCallAmount}`;
+        playChipBet();
         break;
       case 'bet':
       case 'raise':
         logMessage = `You ${action} ${amount || (this.state.bigBlind * 2)}`;
+        playRaise();
         break;
       case 'allin':
         logMessage = `You go all-in ${myPlayer.stack}`;
+        playRaise();
         break;
       case 'check':
         logMessage = 'You check';
+        playCheck();
         break;
       case 'fold':
         logMessage = 'You fold';
+        playFold();
         break;
       default:
         logMessage = `You ${action}${amount ? ` ${amount}` : ''}`;
@@ -875,6 +887,25 @@ export class HeadsUpPokerGame {
     if (action === 'raise' || action === 'allin') {
       this.lastAggressor = 'opponent';
       this.playerHasActed = false; // Player must respond to raise
+    }
+
+    // Play sound based on AI action (only if opponent sounds not muted)
+    if (!audioSystem.shouldMuteOpponents()) {
+      switch (action) {
+        case 'fold':
+          playFold();
+          break;
+        case 'check':
+          playCheck();
+          break;
+        case 'call':
+          playChipBet();
+          break;
+        case 'raise':
+        case 'allin':
+          playRaise();
+          break;
+      }
     }
 
     // Update state with opponent's new bet amount for display on table
@@ -1355,6 +1386,21 @@ export class HeadsUpPokerGame {
       this.state.gameLog.push({
         action: `🏆 ${handInfo}`,
         type: 'result',
+        timestamp: Date.now()
+      });
+    }
+
+    // Track hand completion for winning hands panel
+    if (this.onHandComplete) {
+      this.handCount++;
+      const winner = isTie ? 'Tie' : (playerWins ? 'You' : 'Opponent');
+      const handType = this.state.winningHand || 'Unknown Hand';
+      
+      this.onHandComplete({
+        handNumber: this.handCount,
+        winner,
+        handType,
+        potSize: this.state.pot,
         timestamp: Date.now()
       });
     }

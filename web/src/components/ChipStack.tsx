@@ -120,8 +120,26 @@ const ChipStack: React.FC<ChipStackProps> = ({ amount, size = 'medium', animate 
                   }}
                 />
                 
-                {/* Chip center with denomination label */}
-                <div className={`absolute inset-0 flex items-center justify-center ${style.textColor}`}>
+                {/* Card back logo on chip */}
+                <div className="absolute inset-0 rounded-full overflow-hidden flex items-center justify-center">
+                  <img 
+                    src="/card-back-icon.png" 
+                    alt="" 
+                    className="w-2/3 h-2/3 object-contain opacity-60"
+                    onError={(e) => {
+                      // Fallback if image not found - show denomination instead
+                      const currentTarget = e.currentTarget as HTMLImageElement;
+                      currentTarget.style.display = 'none';
+                      const fallbackDiv = currentTarget.parentElement?.nextElementSibling as HTMLElement;
+                      if (fallbackDiv) {
+                        fallbackDiv.style.opacity = '1';
+                      }
+                    }}
+                  />
+                </div>
+                
+                {/* Chip center with denomination label (fallback when logo fails) */}
+                <div className={`absolute inset-0 flex items-center justify-center ${style.textColor}`} style={{ opacity: 0 }}>
                   <span className={`${config.text} font-black drop-shadow-sm`}>
                     {style.label}
                   </span>

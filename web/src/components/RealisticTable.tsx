@@ -1,13 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PlayerTimer from './PlayerTimer';
 import Card from './Card';
 import PotDisplay from './PotDisplay';
 import ChipStack from './ChipStack';
+import ChipAnimation from './ChipAnimation';
+import ActionBox from './ActionBox';
+import PlayerStatsTooltip from './PlayerStatsTooltip';
+import AnimatedNumber from './AnimatedNumber';
+import { calculatePlayerLevel, getLevelBadgeColor } from '../utils/playerLevel';
 
 interface RealisticTableProps {
   players: any[];
   communityCards: number[];
   pot: number;
+  sidePots?: Array<{ amount: number; eligiblePlayers: number[] }>;
   currentPlayer: number;
   mySeat: number;
   myCards: any[];
@@ -27,6 +33,7 @@ interface RealisticTableProps {
   };
   onRequestTimeBank?: () => void;
   onSitAtSeat?: (seat: number) => void;
+  maxPlayers?: number; // Total player count (2-6)
 }
 
 const cardToString = (cardNum: number): { suit: string, rank: string, color: string } => {
@@ -42,6 +49,7 @@ const RealisticTable: React.FC<RealisticTableProps> = ({
   players,
   communityCards,
   pot,
+  sidePots = [],
   currentPlayer,
   mySeat,
   myCards,
@@ -53,7 +61,8 @@ const RealisticTable: React.FC<RealisticTableProps> = ({
   revealedCards = 0,
   timerState,
   onRequestTimeBank,
-  onSitAtSeat
+  onSitAtSeat,
+  maxPlayers = 6 // Default to 6-player table
 }) => {
 
   // Calculate SB/BB positions based on active players
@@ -82,6 +91,27 @@ const RealisticTable: React.FC<RealisticTableProps> = ({
     }
   }
 
+  // Animation state for betting animations
+  const [activeChipAnimation, setActiveChipAnimation] = useState<{
+    amount: number;
+    fromSeat: number;
+    isAllIn: boolean;
+  } | null>(null);
+  const [activeActionBox, setActiveActionBox] = useState<{
+    action: 'call' | 'raise' | 'check' | 'fold' | 'allin';
+    amount?: number;
+    playerName: string;
+    seat: number;
+  } | null>(null);
+  const [shouldPulsePot, setShouldPulsePot] = useState(false);
+
+  // Hover state for player stats tooltip
+  const [hoveredSeat, setHoveredSeat] = useState<number | null>(null);
+
+  // Track previous player states to detect actions
+  const prevPlayersRef = useRef(players);
+  const prevCurrentPlayerRef = useRef(currentPlayer);
+
   // Theme configurations for realistic tables
   const tableThemes = {
     classic: {
@@ -91,19 +121,15 @@ const RealisticTable: React.FC<RealisticTableProps> = ({
       felt: 'bg-gradient-to-br from-emerald-800 via-green-700 to-emerald-900',
       border: 'border-amber-700',
       shadow: 'shadow-[0_8px_32px_rgba(0,0,0,0.8),inset_0_2px_12px_rgba(120,53,15,0.4),inset_0_-8px_24px_rgba(0,0,0,0.7)]',
-      feltTexture: '',
-      feltPattern: '',
       background: 'purple'
     },
     executive: {
       // Charcoal satin velvet felt with gold rail - Black carpet background
       outerRing: 'bg-gradient-to-b from-yellow-700 via-yellow-600 to-yellow-800',
       innerRing: 'bg-gradient-to-b from-yellow-600 via-amber-500 to-yellow-700',
-      felt: 'bg-gradient-to-br from-slate-700 via-slate-800 to-gray-950',
+      felt: 'bg-gradient-to-br from-slate-800 via-slate-900 to-gray-950',
       border: 'border-yellow-600',
       shadow: 'shadow-[0_8px_32px_rgba(0,0,0,0.8),inset_0_2px_12px_rgba(212,175,55,0.6),inset_0_-8px_24px_rgba(0,0,0,0.7)]',
-      feltTexture: '',
-      feltPattern: '',
       background: 'black'
     },
     dark: {
@@ -113,22 +139,27 @@ const RealisticTable: React.FC<RealisticTableProps> = ({
       felt: 'bg-gradient-to-br from-red-950 via-red-900 to-black',
       border: 'border-blue-900',
       shadow: 'shadow-[0_8px_32px_rgba(0,0,0,0.7),inset_0_2px_12px_rgba(30,58,138,0.3),inset_0_-8px_24px_rgba(0,0,0,0.6)]',
-      feltTexture: '',
-      feltPattern: '',
       background: 'darkBlue'
     },
     light: {
-      // Velvety gold satin felt with birch/pine rail - Cream wood floor background
+      // Velvety gold satin felt with birch/pine rail - Sky blue background
       outerRing: 'bg-gradient-to-b from-stone-200 via-amber-50 to-stone-300',
       innerRing: 'bg-gradient-to-b from-amber-50 via-yellow-50 to-stone-200',
       felt: 'bg-gradient-to-br from-yellow-600 via-amber-500 to-yellow-700',
       border: 'border-stone-200',
       shadow: 'shadow-[0_8px_32px_rgba(0,0,0,0.3),inset_0_2px_12px_rgba(250,250,249,0.5),inset_0_-8px_16px_rgba(0,0,0,0.1)]',
-      feltTexture: '',
-      feltPattern: '',
-      background: 'creamWood'
+      background: 'skyBlue'
     }
   };
+
+  // Auto-detect player actions and trigger animations - DISABLED to prevent loops
+  // This was causing infinite chip animations
+  // TODO: Re-implement with better debouncing/tracking if needed
+  useEffect(() => {
+    // Update refs only, no animation triggers
+    prevPlayersRef.current = players;
+    prevCurrentPlayerRef.current = currentPlayer;
+  }, [players, currentPlayer]);
 
   const currentTheme = tableThemes[theme];
   
@@ -144,7 +175,7 @@ const RealisticTable: React.FC<RealisticTableProps> = ({
       case 'skyBlue':
         return 'from-sky-200 via-blue-100 to-sky-300';
       case 'creamWood':
-        return 'from-amber-50 via-yellow-50 to-stone-100';
+        return 'from-orange-100 via-amber-100 to-orange-200';
       default:
         return 'from-red-950 via-gray-950 to-purple-950';
     }
@@ -161,7 +192,7 @@ const RealisticTable: React.FC<RealisticTableProps> = ({
       case 'skyBlue':
         return { base: '#e0f2fe', diamond1: '#bae6fd', diamond2: '#d0ebfd', accent: '#7dd3fc', line: '#c0e5fd', dot: '#38bdf8' };
       case 'creamWood':
-        return { base: '#fef3c7', diamond1: '#fde68a', diamond2: '#fef08a', accent: '#fcd34d', line: '#fde68a', dot: '#f59e0b' };
+        return { base: '#fed7aa', diamond1: '#fdba74', diamond2: '#fdc794', accent: '#fb923c', line: '#fdba74', dot: '#f97316' };
       default:
         return { base: '#1a0a0f', diamond1: '#3a1520', diamond2: '#2a0f18', accent: '#4a1a28', line: '#2a1015', dot: '#5a2030' };
     }
@@ -218,8 +249,8 @@ const RealisticTable: React.FC<RealisticTableProps> = ({
         <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-black" style={{ opacity: vignetteOpacity }}></div>
       </div>
       
-      {/* Oval Table Container */}
-      <div className="relative w-full max-w-7xl aspect-[16/10] z-10">
+      {/* Oval Table Container - Optimized for 1920x1080 */}
+      <div className="relative w-full max-w-6xl aspect-[16/10] z-10">
         
         {/* Bar Stools - Behind everything */}
         {[0, 60, 120, 180, 240, 300].map((angle, i) => {
@@ -265,7 +296,7 @@ const RealisticTable: React.FC<RealisticTableProps> = ({
           <div className={`absolute inset-4 ${currentTheme.innerRing} rounded-[50%] shadow-inner`}>
             
             {/* Playing Surface (Felt) */}
-            <div className={`absolute inset-8 ${currentTheme.felt} ${currentTheme.feltTexture} ${currentTheme.feltPattern} rounded-[50%] border-4 ${currentTheme.border} shadow-[inset_0_4px_24px_rgba(0,0,0,0.5)]`}>
+            <div className={`absolute inset-8 ${currentTheme.felt} rounded-[50%] border-4 ${currentTheme.border} shadow-[inset_0_4px_24px_rgba(0,0,0,0.5)]`}>
               
               {/* Subtle table markings */}
               <div className="absolute inset-0 rounded-[50%] opacity-30">
@@ -310,7 +341,9 @@ const RealisticTable: React.FC<RealisticTableProps> = ({
                 if (seatNum === 6) xOffset = -1; // Move left 1%
                 
                 const x = 50 + radiusX * Math.cos(radian) + xOffset;
-                const y = 50 + radiusY * Math.sin(radian) + 3; // Move down 3%
+                const y = 50 + radiusY * Math.sin(radian) + 2; // Move down 2% (adjusted down 1% more)
+                
+                const isCurrentPlayer = currentPlayer === seatNum;
                 
                 return (
                   <div
@@ -322,7 +355,26 @@ const RealisticTable: React.FC<RealisticTableProps> = ({
                       transform: 'translate(-50%, -50%)'
                     }}
                   >
-                    <ChipStack amount={player.bet} size="small" animate={true} />
+                    {/* Soft spotlight effect from above - circular glow on betting chips */}
+                    {isCurrentPlayer && (
+                      <div 
+                        className="absolute"
+                        style={{
+                          width: '160px',
+                          height: '160px',
+                          borderRadius: '50%',
+                          background: 'radial-gradient(circle at center, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.15) 30%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 70%, transparent 100%)',
+                          boxShadow: '0 0 60px rgba(255,255,255,0.2), inset 0 0 40px rgba(255,255,255,0.1)',
+                          transform: 'translate(-50%, -50%)',
+                          left: '50%',
+                          top: '50%',
+                          pointerEvents: 'none',
+                          animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                          filter: 'blur(4px)'
+                        }}
+                      />
+                    )}
+                    <ChipStack amount={player.bet} size="medium" animate={true} />
                   </div>
                 );
               })}
@@ -347,8 +399,22 @@ const RealisticTable: React.FC<RealisticTableProps> = ({
                 if (seatNum === 5) xOffset = 1;
                 if (seatNum === 6) xOffset = -1;
                 
+                // Seat-specific vertical adjustments (seat 4 dealer chip below player)
+                let yOffset = 3;
+                if (seatNum === 4) yOffset = 8; // Move dealer chip below for seat 4 (left side)
+                
+                // Adjust position for seats 2 and 3 to avoid bet amount overlay
+                if (seatNum === 2) {
+                  xOffset = -6; // Move further left for seat 2 (top right)
+                  yOffset = 5;  // Move down slightly
+                }
+                if (seatNum === 3) {
+                  xOffset = 6;  // Move further right for seat 3 (right side)
+                  yOffset = 1;  // Move up slightly
+                }
+                
                 const x = 50 + radiusX * Math.cos(radian) + xOffset;
-                const y = 50 + radiusY * Math.sin(radian) + 3;
+                const y = 50 + radiusY * Math.sin(radian) + yOffset;
                 
                 // Determine which chip to show (priority: Dealer > BB > SB)
                 let chipType: 'dealer' | 'sb' | 'bb' | null = null;
@@ -368,13 +434,18 @@ const RealisticTable: React.FC<RealisticTableProps> = ({
                       transform: 'translate(-50%, -50%)'
                     }}
                   >
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold shadow-lg border-2 ${
-                      chipType === 'dealer' 
-                        ? 'bg-white text-black border-amber-400' 
-                        : chipType === 'sb'
-                        ? 'bg-blue-500 text-white border-blue-300'
-                        : 'bg-red-600 text-white border-red-400'
-                    }`}>
+                    <div 
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border-2 transition-all ${
+                        chipType === 'dealer' 
+                          ? 'bg-gradient-to-br from-amber-200 via-amber-300 to-amber-500 text-black border-amber-400 animate-pulse' 
+                          : chipType === 'sb'
+                          ? 'bg-blue-500 text-white border-blue-300 shadow-lg'
+                          : 'bg-red-600 text-white border-red-400 shadow-lg'
+                      }`}
+                      style={chipType === 'dealer' ? {
+                        boxShadow: '0 0 20px rgba(251, 191, 36, 0.8), 0 0 40px rgba(251, 191, 36, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.5)'
+                      } : {}}
+                    >
                       {chipType === 'dealer' ? 'D' : chipType === 'sb' ? 'SB' : 'BB'}
                     </div>
                   </div>
@@ -383,35 +454,41 @@ const RealisticTable: React.FC<RealisticTableProps> = ({
               
               {/* Center: Community Cards & Pot */}
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-                {/* Pot Display */}
+                {/* Pot Display with pulsing animation */}
                 <div className="mb-6">
-                  <PotDisplay mainPot={pot} />
+                  <PotDisplay 
+                    mainPot={pot} 
+                    sidePots={sidePots?.map(sp => ({ amount: sp.amount, players: sp.eligiblePlayers.map(String) }))} 
+                    shouldPulse={shouldPulsePot} 
+                  />
                 </div>
                 
-                {/* Community Cards */}
+                {/* Community Cards - Slightly smaller */}
                 <div className="flex gap-2 justify-center">
                   {communityCards && communityCards.length > 0 ? (
                     communityCards.map((card, i) => {
                       const cardData = cardToString(card);
                       const isRevealed = i < revealedCards;
                       return (
-                        <Card
-                          key={i}
-                          suit={cardData.suit}
-                          rank={cardData.rank}
-                          color={cardData.color}
-                          size="medium"
-                          animationDelay={i * 0.15}
-                          faceDown={!isRevealed}
-                          showFlipAnimation={isRevealed}
-                        />
+                        <div key={i} style={{ transform: 'scale(0.9)' }}>
+                          <Card
+                            suit={cardData.suit}
+                            rank={cardData.rank}
+                            color={cardData.color}
+                            size="medium"
+                            animationDelay={i * 0.15}
+                            faceDown={!isRevealed}
+                            showFlipAnimation={isRevealed}
+                            theme={theme}
+                          />
+                        </div>
                       );
                     })
                   ) : (
                     [0, 1, 2, 3, 4].map((i) => (
                       <div
                         key={i}
-                        className="w-16 h-24 rounded-lg border-2 border-dashed border-white/20 bg-white/5"
+                        className="w-14 h-20 rounded-lg border-2 border-dashed border-white/20 bg-white/5"
                       ></div>
                     ))
                   )}
@@ -457,13 +534,108 @@ const RealisticTable: React.FC<RealisticTableProps> = ({
                     }}
                   >
                     {player ? (
-                      <div className="relative">
+                      <div className={`relative transition-all duration-500 ${
+                        player.folded 
+                          ? 'opacity-40 grayscale blur-[0.5px]' 
+                          : 'opacity-100'
+                      }`}>
                         
-                        {/* Player Seat Box */}
-                        <div className="flex flex-col items-center gap-2">
-                          {/* Avatar */}
-                          <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 border-2 border-amber-500/50 flex items-center justify-center text-2xl shadow-lg">
-                            {myAvatar && myAvatar.startsWith('IMG:') ? (
+                        {/* Player Layout: Cards behind Avatar → Avatar → Name → Stack */}
+                        <div className="relative flex flex-col items-center gap-2">
+                          
+                          {/* CARDS - Larger, more spread, more tilted */}
+                          {isMe && myCards && myCards.length > 0 && (
+                            <div className="absolute" style={{ top: '-60px', left: '50%', transform: 'translateX(-50%)', zIndex: 0 }}>
+                              <div className="relative" style={{ width: '110px', height: '80px' }}>
+                                {myCards.map((card, i) => {
+                                  const cardData = cardToString(card);
+                                  // Cards: larger, more spread, more tilted
+                                  const rotation = i === 0 ? -15 : 15; // More tilt (was -12/12)
+                                  const xOffset = i === 0 ? -24 : 24; // More spread (was -20/20)
+                                  
+                                  return (
+                                    <div 
+                                      key={i}
+                                      className="absolute"
+                                      style={{ 
+                                        left: '50%',
+                                        top: '0',
+                                        transform: `translateX(calc(-50% + ${xOffset}px)) rotate(${rotation}deg) scale(1.15)`,
+                                        zIndex: 0,
+                                        transition: 'transform 0.3s ease'
+                                      }}
+                                    >
+                                      <Card
+                                        suit={cardData.suit}
+                                        rank={cardData.rank}
+                                        color={cardData.color}
+                                        size="small"
+                                        animationDelay={i * 0.3}
+                                        theme={theme}
+                                      />
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Opponent Cards (seat 4 when showdown) - Larger, more spread, more tilted */}
+                          {!isMe && seatNum === 4 && showOpponentCards && opponentCards && opponentCards.length > 0 && (
+                            <div className="absolute" style={{ top: '-60px', left: '50%', transform: 'translateX(-50%)', zIndex: 0 }}>
+                              <div className="relative" style={{ width: '110px', height: '80px' }}>
+                                {opponentCards.map((card, i) => {
+                                  const cardData = cardToString(card);
+                                  // Cards: larger, more spread, more tilted
+                                  const rotation = i === 0 ? -15 : 15; // More tilt (was -12/12)
+                                  const xOffset = i === 0 ? -24 : 24; // More spread (was -20/20)
+                                  
+                                  return (
+                                    <div 
+                                      key={i}
+                                      className="absolute"
+                                      style={{ 
+                                        left: '50%',
+                                        top: '0',
+                                        transform: `translateX(calc(-50% + ${xOffset}px)) rotate(${rotation}deg) scale(1.15)`,
+                                        zIndex: 0,
+                                        transition: 'transform 0.3s ease'
+                                      }}
+                                    >
+                                      <Card
+                                        suit={cardData.suit}
+                                        rank={cardData.rank}
+                                        color={cardData.color}
+                                        size="small"
+                                        animationDelay={i * 0.3}
+                                        showFlipAnimation={true}
+                                        theme={theme}
+                                      />
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* AVATAR circle - Even Larger with Hover Tooltip */}
+                          <div 
+                            className={`relative w-20 h-20 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center text-4xl shadow-lg transition-all duration-300 cursor-pointer hover:scale-105 ${
+                              currentPlayer === seatNum && !timerState
+                                ? 'border-2 border-cyan-400'
+                                : 'border-2 border-amber-500/50'
+                            }`} 
+                            style={{ 
+                              zIndex: 10,
+                              ...(currentPlayer === seatNum ? {
+                                boxShadow: '0 0 20px rgba(6, 182, 212, 0.6), 0 0 40px rgba(6, 182, 212, 0.4)',
+                                animation: 'activePlayerGlow 2s ease-in-out infinite'
+                              } : {})
+                            }}
+                            onMouseEnter={() => setHoveredSeat(seatNum)}
+                            onMouseLeave={() => setHoveredSeat(null)}
+                          >
+                            {isMe && myAvatar && myAvatar.startsWith('IMG:') ? (
                               <img
                                 src={`/avatars/${myAvatar.replace('IMG:', '')}.png`}
                                 alt="avatar"
@@ -473,79 +645,110 @@ const RealisticTable: React.FC<RealisticTableProps> = ({
                               <span>{isMe ? myAvatar : (player.avatar || '🎮')}</span>
                             )}
                             
-                            {/* Timer - Centered in avatar */}
+                            {/* Timer border - wraps around avatar as a colored ring */}
                             {isMe && currentPlayer === seatNum && timerState && (
-                              <div className="absolute inset-0 flex items-center justify-center z-50">
-                                <PlayerTimer
-                                  playerId={seatNum.toString()}
-                                  isActive={true}
-                                  baseTimeMs={timerState.baseTimeMs}
-                                  baseMaxMs={timerState.baseMaxMs}
-                                  timeBankMs={timerState.timeBankMs}
-                                  timeBankMaxMs={timerState.timeBankMaxMs}
-                                  usingTimeBank={timerState.usingTimeBank}
-                                  onRequestTimeBank={onRequestTimeBank}
-                                />
+                              <PlayerTimer
+                                playerId={seatNum.toString()}
+                                isActive={true}
+                                baseTimeMs={timerState.baseTimeMs}
+                                baseMaxMs={timerState.baseMaxMs}
+                                timeBankMs={timerState.timeBankMs}
+                                timeBankMaxMs={timerState.timeBankMaxMs}
+                                usingTimeBank={timerState.usingTimeBank}
+                                onRequestTimeBank={onRequestTimeBank}
+                              />
+                            )}
+
+                            {/* Timeout Warning Indicator */}
+                            {player.timeoutWarning && (
+                              <div 
+                                className="absolute -top-2 -right-2 z-50 bg-red-600 rounded-full w-8 h-8 flex items-center justify-center text-white text-xs font-bold border-2 border-white shadow-lg animate-pulse"
+                                title="Warning: 1 timeout - another timeout will remove you from the hand"
+                              >
+                                ⚠️
                               </div>
                             )}
+
+                            {/* Timeout Counter (if player has any timeouts) */}
+                            {(player.timeouts ?? 0) > 0 && !player.timeoutWarning && (
+                              <div 
+                                className="absolute -top-1 -right-1 z-50 bg-amber-600 rounded-full w-7 h-7 flex items-center justify-center text-white text-xs font-bold border-2 border-white shadow-md"
+                                title={`Timeouts: ${player.timeouts}/2`}
+                              >
+                                {player.timeouts}
+                              </div>
+                            )}
+                            
+                            {/* Player Stats Tooltip on Hover */}
+                            {hoveredSeat === seatNum && (
+                              <PlayerStatsTooltip
+                                player={{
+                                  name: player.name || 'Opponent',
+                                  avatar: player.avatar,
+                                  stack: player.stack || 0,
+                                  handsPlayed: player.handsPlayed || 0,
+                                  handsWon: player.handsWon || 0,
+                                  biggestPot: player.biggestPot || 0,
+                                  currentBuyIn: player.currentBuyIn || player.stack
+                                }}
+                                isMe={isMe}
+                                playerAlias={playerAlias}
+                              />
+                            )}
+                            
+                            {/* Player Level Badge */}
+                            {(() => {
+                              const levelInfo = calculatePlayerLevel(
+                                player.handsPlayed || 0,
+                                player.handsWon || 0
+                              );
+                              const colors = getLevelBadgeColor(levelInfo.level);
+                              
+                              return (
+                                <div 
+                                  className={`absolute -bottom-2 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-r ${colors.bg} rounded-full w-10 h-10 flex items-center justify-center text-white text-sm font-black border-3 ${colors.border} shadow-lg`}
+                                  style={{
+                                    boxShadow: `0 0 15px ${colors.glow}, 0 0 25px ${colors.glow}`
+                                  }}
+                                  title={`Level ${levelInfo.level} - ${levelInfo.progressPercent}% to next level`}
+                                >
+                                  {levelInfo.level}
+                                </div>
+                              );
+                            })()}
                           </div>
                           
-                          {/* Name & Stack */}
-                          <div className={`relative bg-slate-900/90 backdrop-blur-sm px-4 py-2 rounded-lg min-w-[120px] text-center transition-all duration-300 ${
-                            currentPlayer === seatNum
-                              ? (timerState && timerState.usingTimeBank
-                                  ? 'border-2 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.8)] animate-pulse'
-                                  : 'border-2 border-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.6)] animate-pulse')
-                              : 'border border-slate-700'
-                          }`}>
+                          {/* 3. NAME - Overlaps avatar bottom slightly */}
+                          <div className="bg-slate-900/90 backdrop-blur-sm px-4 py-1.5 rounded-lg border border-slate-700 min-w-[120px] text-center -mt-2" style={{ zIndex: 11 }}>
                             <div className="text-slate-200 font-semibold text-base truncate">
                               {isMe ? (playerAlias || 'You') : player.name || 'Opponent'}
                             </div>
-                            <div className="text-amber-400 font-bold text-sm">
-                              {player.stack?.toLocaleString() || '0'} SHIDO
-                            </div>
-                            
-
                           </div>
                           
-                          {/* Player's Cards (only for seat 1 - you) */}
-                          {isMe && myCards && myCards.length > 0 && (
-                            <div className="flex gap-2 mt-2">
-                              {myCards.map((card, i) => {
-                                const cardData = cardToString(card);
-                                return (
-                                  <Card
-                                    key={i}
-                                    suit={cardData.suit}
-                                    rank={cardData.rank}
-                                    color={cardData.color}
-                                    size="small"
-                                    animationDelay={i * 0.3}
-                                  />
-                                );
-                              })}
+                          {/* 4. STACK (Money in the bank) */}
+                          <div className="bg-slate-900/90 backdrop-blur-sm px-4 py-1.5 rounded-lg border border-amber-500/40 min-w-[120px] text-center">
+                            <div className="text-amber-400 font-bold text-sm">
+                              <AnimatedNumber value={player.stack || 0} duration={0.3} separator="," /> SHIDO
+                            </div>
+                          </div>
+                          
+                          {/* 5. LAST ACTION - Shows recent action with color coding (below stack) */}
+                          {player.lastAction && (
+                            <div className={`px-3 py-1 rounded-md text-xs font-black uppercase tracking-wider transition-all duration-300 ${
+                              player.lastAction.type === 'raise' || player.lastAction.type === 'bet' 
+                                ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/40 shadow-[0_0_10px_rgba(234,179,8,0.3)]' 
+                                : player.lastAction.type === 'call' 
+                                ? 'bg-green-500/20 text-green-400 border border-green-500/40 shadow-[0_0_10px_rgba(34,197,94,0.3)]'
+                                : player.lastAction.type === 'fold' 
+                                ? 'bg-red-500/20 text-red-400 border border-red-500/40 shadow-[0_0_10px_rgba(239,68,68,0.3)]'
+                                : player.lastAction.type === 'allin'
+                                ? 'bg-purple-500/20 text-purple-400 border border-purple-500/40 shadow-[0_0_10px_rgba(168,85,247,0.3)] animate-pulse'
+                                : 'bg-slate-500/20 text-slate-400 border border-slate-500/40'
+                            }`}>
+                              {player.lastAction.text}
                             </div>
                           )}
                           
-                          {/* Opponent Cards (seat 4 when showdown) */}
-                          {!isMe && seatNum === 4 && showOpponentCards && opponentCards && opponentCards.length > 0 && (
-                            <div className="flex gap-2 mt-2">
-                              {opponentCards.map((card, i) => {
-                                const cardData = cardToString(card);
-                                return (
-                                  <Card
-                                    key={i}
-                                    suit={cardData.suit}
-                                    rank={cardData.rank}
-                                    color={cardData.color}
-                                    size="small"
-                                    animationDelay={i * 0.3}
-                                    showFlipAnimation={true}
-                                  />
-                                );
-                              })}
-                            </div>
-                          )}
                         </div>
                       </div>
                     ) : (
@@ -563,7 +766,7 @@ const RealisticTable: React.FC<RealisticTableProps> = ({
                           onSitAtSeat && onSitAtSeat(seatNum);
                         }}
                       >
-                        <div className={`w-20 h-20 rounded-full border-2 border-dashed flex flex-col items-center justify-center transition-all ${
+                        <div className={`w-24 h-24 rounded-full border-2 border-dashed flex flex-col items-center justify-center transition-all ${
                           mySeat > 0 && mySeat !== seatNum
                             ? 'border-white/10 bg-white/5'
                             : 'border-amber-500/40 bg-amber-500/10 hover:border-amber-400 hover:bg-amber-400/20 hover:shadow-lg hover:shadow-amber-500/30'
@@ -592,6 +795,24 @@ const RealisticTable: React.FC<RealisticTableProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Betting Animations - Chip sliding animations */}
+        {activeChipAnimation && (
+          <ChipAnimation
+            {...activeChipAnimation}
+            onComplete={() => {
+              setActiveChipAnimation(null);
+            }}
+          />
+        )}
+
+        {/* Action Boxes - Float above players showing their actions */}
+        {activeActionBox && (
+          <ActionBox
+            {...activeActionBox}
+            onComplete={() => setActiveActionBox(null)}
+          />
+        )}
         
       </div>
     </div>

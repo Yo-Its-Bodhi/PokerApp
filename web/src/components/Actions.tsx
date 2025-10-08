@@ -14,9 +14,12 @@ interface ActionsProps {
   mySeat?: number;
   awaitingShowMuckDecision?: boolean;
   autoFold?: boolean;
-  autoCall?: boolean;
+  autoCheck?: boolean;
   onAutoFoldChange?: (value: boolean) => void;
-  onAutoCallChange?: (value: boolean) => void;
+  onAutoCheckChange?: (value: boolean) => void;
+  isOverlay?: boolean;
+  sitOutNextHand?: boolean;
+  onSitOutToggle?: () => void;
 }
 
 const Actions: React.FC<ActionsProps> = ({ 
@@ -32,9 +35,12 @@ const Actions: React.FC<ActionsProps> = ({
   mySeat,
   awaitingShowMuckDecision = false,
   autoFold = false,
-  autoCall = false,
+  autoCheck = false,
   onAutoFoldChange,
-  onAutoCallChange
+  onAutoCheckChange,
+  isOverlay = false,
+  sitOutNextHand = false,
+  onSitOutToggle
 }) => {
   const maxBet = Math.min(100000, playerStack);
   const [raiseAmount, setRaiseAmount] = useState(Math.min(20000, maxBet));
@@ -65,6 +71,234 @@ const Actions: React.FC<ActionsProps> = ({
       return () => clearTimeout(timeout);
     }
   }, [awaitingShowMuckDecision, onShowMuck]);
+  // Neon Underground Overlay Mode - Cyberpunk button layout at bottom of table
+  if (isOverlay) {
+    return (
+      <div 
+        className="flex items-center gap-3 px-6 py-3 backdrop-blur-md rounded-2xl shadow-2xl"
+        style={{
+          background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(6, 182, 212, 0.05) 50%, rgba(0, 0, 0, 0.9) 100%)',
+          border: '2px solid rgba(6, 182, 212, 0.3)',
+          boxShadow: '0 0 30px rgba(6, 182, 212, 0.2), inset 0 0 30px rgba(6, 182, 212, 0.05)'
+        }}
+      >
+        {awaitingShowMuckDecision && onShowMuck ? (
+          <>
+            <button
+              onClick={() => { playButtonClick(); onShowMuck(true); }}
+              className="px-6 py-3 bg-green-500/80 hover:bg-green-400/90 backdrop-blur-sm text-white rounded-xl font-bold transition-all shadow-lg hover:shadow-green-500/50 border border-green-400/30 hover:border-green-300/50 text-sm uppercase tracking-wider hover:scale-105"
+            >
+              SHOW
+            </button>
+            <button
+              onClick={() => { playButtonClick(); onShowMuck(false); }}
+              className="px-6 py-3 bg-red-500/80 hover:bg-red-400/90 backdrop-blur-sm text-white rounded-xl font-bold transition-all shadow-lg hover:shadow-red-500/50 border border-red-400/30 hover:border-red-300/50 text-sm uppercase tracking-wider hover:scale-105"
+            >
+              MUCK
+            </button>
+          </>
+        ) : isBusted && onRebuy ? (
+          <>
+            <button
+              onClick={() => onRebuy(100000)}
+              className="px-6 py-3 bg-green-500/80 hover:bg-green-400/90 backdrop-blur-sm text-white rounded-xl font-bold transition-all shadow-lg hover:shadow-green-500/50 border border-green-400/30 hover:border-green-300/50 text-sm uppercase tracking-wider hover:scale-105"
+            >
+              ADD 100K
+            </button>
+            <button
+              onClick={onStandUp}
+              className="px-6 py-3 bg-slate-600/80 hover:bg-slate-500/90 backdrop-blur-sm text-white rounded-xl font-bold transition-all shadow-lg hover:shadow-slate-500/50 border border-slate-500/30 hover:border-slate-400/50 text-sm uppercase tracking-wider hover:scale-105"
+            >
+              LEAVE
+            </button>
+          </>
+        ) : (
+          <>
+            {/* FOLD */}
+            <button
+              onClick={() => { playButtonClick(); onAction('fold'); }}
+              disabled={!isMyTurn}
+              className={`px-4 py-2 rounded-lg font-bold transition-all text-sm uppercase tracking-wider hover:scale-105 ${
+                !isMyTurn
+                  ? 'bg-slate-700/30 text-slate-400 cursor-not-allowed opacity-50 backdrop-blur-sm border border-slate-600/30'
+                  : 'backdrop-blur-sm text-white font-black tracking-widest'
+              }`}
+              style={isMyTurn ? {
+                background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2))',
+                border: '2px solid rgba(239, 68, 68, 0.6)',
+                boxShadow: '0 0 15px rgba(239, 68, 68, 0.4), inset 0 0 15px rgba(239, 68, 68, 0.1)',
+                textShadow: '0 0 8px rgba(239, 68, 68, 0.8)'
+              } : {}}
+              onMouseEnter={isMyTurn ? (e) => {
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(220, 38, 38, 0.3))';
+                e.currentTarget.style.border = '2px solid rgba(239, 68, 68, 1)';
+                e.currentTarget.style.boxShadow = '0 0 25px rgba(239, 68, 68, 0.6), inset 0 0 20px rgba(239, 68, 68, 0.2)';
+              } : undefined}
+              onMouseLeave={isMyTurn ? (e) => {
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2))';
+                e.currentTarget.style.border = '2px solid rgba(239, 68, 68, 0.6)';
+                e.currentTarget.style.boxShadow = '0 0 15px rgba(239, 68, 68, 0.4), inset 0 0 15px rgba(239, 68, 68, 0.1)';
+              } : undefined}
+            >
+              FOLD
+            </button>
+
+            {/* CHECK/CALL */}
+            <button
+              onClick={() => { playButtonClick(); onAction(callAmount > 0 ? 'call' : 'check', callAmount); }}
+              disabled={!isMyTurn || isAllIn}
+              className={`px-4 py-2 rounded-lg font-bold transition-all text-sm uppercase tracking-wider hover:scale-105 ${
+                !isMyTurn || isAllIn
+                  ? 'bg-slate-700/30 text-slate-400 cursor-not-allowed opacity-50 backdrop-blur-sm border border-slate-600/30'
+                  : 'backdrop-blur-sm text-white font-black tracking-widest'
+              }`}
+              style={(isMyTurn && !isAllIn) ? {
+                background: callAmount > 0 
+                  ? 'linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(14, 165, 233, 0.2))'
+                  : 'linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(22, 163, 74, 0.2))',
+                border: callAmount > 0 
+                  ? '2px solid rgba(6, 182, 212, 0.6)'
+                  : '2px solid rgba(34, 197, 94, 0.6)',
+                boxShadow: callAmount > 0
+                  ? '0 0 15px rgba(6, 182, 212, 0.4), inset 0 0 15px rgba(6, 182, 212, 0.1)'
+                  : '0 0 15px rgba(34, 197, 94, 0.4), inset 0 0 15px rgba(34, 197, 94, 0.1)',
+                textShadow: callAmount > 0
+                  ? '0 0 8px rgba(6, 182, 212, 0.8)'
+                  : '0 0 8px rgba(34, 197, 94, 0.8)'
+              } : {}}
+              onMouseEnter={(isMyTurn && !isAllIn) ? (e) => {
+                const isCall = callAmount > 0;
+                e.currentTarget.style.background = isCall 
+                  ? 'linear-gradient(135deg, rgba(6, 182, 212, 0.3), rgba(14, 165, 233, 0.3))'
+                  : 'linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(22, 163, 74, 0.3))';
+                e.currentTarget.style.border = isCall 
+                  ? '2px solid rgba(6, 182, 212, 1)'
+                  : '2px solid rgba(34, 197, 94, 1)';
+                e.currentTarget.style.boxShadow = isCall
+                  ? '0 0 25px rgba(6, 182, 212, 0.6), inset 0 0 20px rgba(6, 182, 212, 0.2)'
+                  : '0 0 25px rgba(34, 197, 94, 0.6), inset 0 0 20px rgba(34, 197, 94, 0.2)';
+              } : undefined}
+              onMouseLeave={(isMyTurn && !isAllIn) ? (e) => {
+                const isCall = callAmount > 0;
+                e.currentTarget.style.background = isCall 
+                  ? 'linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(14, 165, 233, 0.2))'
+                  : 'linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(22, 163, 74, 0.2))';
+                e.currentTarget.style.border = isCall 
+                  ? '2px solid rgba(6, 182, 212, 0.6)'
+                  : '2px solid rgba(34, 197, 94, 0.6)';
+                e.currentTarget.style.boxShadow = isCall
+                  ? '0 0 15px rgba(6, 182, 212, 0.4), inset 0 0 15px rgba(6, 182, 212, 0.1)'
+                  : '0 0 15px rgba(34, 197, 94, 0.4), inset 0 0 15px rgba(34, 197, 94, 0.1)';
+              } : undefined}
+            >
+              {callAmount > 0 ? `CALL $${callAmount}` : 'CHECK'}
+            </button>
+
+            {/* BET/RAISE with slider */}
+            <div className="flex items-center gap-2">
+              <div className="bg-black/30 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/10 min-w-[140px]">
+                <div className="flex justify-between text-xs text-white/80 mb-1">
+                  <span>{currentBet === 0 ? 'Bet' : 'Raise'}</span>
+                  <span className="font-bold">${raiseAmount}</span>
+                </div>
+                <input
+                  type="range"
+                  min={minRaise}
+                  max={maxBet}
+                  step={1000}
+                  value={raiseAmount}
+                  onChange={handleRaiseChange}
+                  disabled={!isMyTurn}
+                  className="w-full h-1 rounded-lg appearance-none cursor-pointer"
+                  style={{
+                    background: isMyTurn 
+                      ? `linear-gradient(to right, ${currentBet === 0 ? '#3b82f6' : '#06b6d4'} 0%, ${currentBet === 0 ? '#3b82f6' : '#06b6d4'} ${((raiseAmount - minRaise) / (maxBet - minRaise)) * 100}%, rgba(255,255,255,0.2) ${((raiseAmount - minRaise) / (maxBet - minRaise)) * 100}%, rgba(255,255,255,0.2) 100%)`
+                      : 'rgba(255,255,255,0.1)'
+                  }}
+                />
+              </div>
+              <button
+                onClick={() => { playButtonClick(); onAction(currentBet === 0 ? 'bet' : 'raise', raiseAmount); }}
+                disabled={!isMyTurn || raiseAmount < minRaise || raiseAmount > maxBet || isAllIn}
+                className={`px-4 py-2 rounded-lg font-bold transition-all text-sm uppercase tracking-wider hover:scale-105 ${
+                  !isMyTurn || raiseAmount < minRaise || raiseAmount > maxBet || isAllIn
+                    ? 'bg-slate-700/30 text-slate-400 cursor-not-allowed opacity-50 backdrop-blur-sm border border-slate-600/30'
+                    : currentBet === 0
+                      ? 'bg-blue-500/80 hover:bg-blue-400/90 backdrop-blur-sm text-white shadow-lg hover:shadow-blue-500/50 border border-blue-400/30 hover:border-blue-300/50'
+                      : 'bg-green-500/80 hover:bg-green-400/90 backdrop-blur-sm text-white shadow-lg hover:shadow-green-500/50 border border-green-400/30 hover:border-green-300/50'
+                }`}
+              >
+                {currentBet === 0 ? 'BET' : 'RAISE'}
+              </button>
+            </div>
+
+            {/* ALL IN */}
+            <button
+              onClick={() => { playButtonClick(); onAction('raise', playerStack); }}
+              disabled={!isMyTurn || isAllIn}
+              className={`px-4 py-2 rounded-lg font-bold transition-all text-sm uppercase tracking-wider hover:scale-105 ${
+                !isMyTurn || isAllIn
+                  ? 'bg-slate-700/30 text-slate-400 cursor-not-allowed opacity-50 backdrop-blur-sm border border-slate-600/30'
+                  : 'bg-orange-500/80 hover:bg-orange-400/90 backdrop-blur-sm text-white shadow-lg hover:shadow-orange-500/50 border border-orange-400/30 hover:border-orange-300/50'
+              }`}
+            >
+              ALL IN
+            </button>
+
+            {/* AUTO-ACTIONS & SIT OUT */}
+            <div className="flex flex-col gap-1.5 ml-4">
+              {onAutoFoldChange && (
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={autoFold}
+                    onChange={(e) => onAutoFoldChange(e.target.checked)}
+                    className="w-4 h-4 rounded border-2 border-cyan-400/50 bg-slate-800/50 checked:bg-cyan-500 checked:border-cyan-400 cursor-pointer transition-all"
+                  />
+                  <span className="text-xs text-cyan-300 group-hover:text-cyan-200 transition-colors font-medium uppercase tracking-wide">
+                    Auto-Fold
+                  </span>
+                </label>
+              )}
+              {onAutoCheckChange && (
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={autoCheck}
+                    onChange={(e) => onAutoCheckChange(e.target.checked)}
+                    className="w-4 h-4 rounded border-2 border-cyan-400/50 bg-slate-800/50 checked:bg-cyan-500 checked:border-cyan-400 cursor-pointer transition-all"
+                  />
+                  <span className="text-xs text-cyan-300 group-hover:text-cyan-200 transition-colors font-medium uppercase tracking-wide">
+                    Auto-Check
+                  </span>
+                </label>
+              )}
+              
+              {/* Sit Out Next Hand Toggle */}
+              {onSitOutToggle && (
+                <label className="flex items-center gap-2 cursor-pointer group mt-1">
+                  <input
+                    type="checkbox"
+                    checked={sitOutNextHand}
+                    onChange={() => { playButtonClick(); onSitOutToggle(); }}
+                    className="w-4 h-4 rounded border-2 border-slate-400/50 bg-slate-800/50 checked:bg-slate-500 checked:border-slate-400 cursor-pointer transition-all"
+                  />
+                  <span className={`text-xs transition-colors font-medium uppercase tracking-wide ${
+                    sitOutNextHand ? 'text-slate-300' : 'text-slate-400 group-hover:text-slate-300'
+                  }`}>
+                    {sitOutNextHand ? '⏸️ Sitting Out' : 'Sit Out'}
+                  </span>
+                </label>
+              )}
+            </div>
+
+          </>
+        )}
+      </div>
+    );
+  }
+
+  // Original Panel Mode
   return (
     <div className="glass-card p-4 flex flex-col h-full">
       {awaitingShowMuckDecision && onShowMuck && (
@@ -253,7 +487,7 @@ const Actions: React.FC<ActionsProps> = ({
                 {currentBet === 0 ? 'BET' : 'RAISE'}
               </button>
 
-              {onAutoFoldChange && onAutoCallChange && (
+              {onAutoFoldChange && onAutoCheckChange && (
                 <div className="space-y-1.5 p-2 rounded-lg bg-slate-900/50 border border-slate-700/50">
                   <p className="text-slate-400 text-[10px] font-semibold uppercase tracking-wide">Auto</p>
                   
@@ -278,12 +512,12 @@ const Actions: React.FC<ActionsProps> = ({
                     <div className="relative flex-shrink-0">
                       <input
                         type="checkbox"
-                        checked={autoCall}
-                        onChange={(e) => { playButtonClick(); onAutoCallChange(e.target.checked); }}
+                        checked={autoCheck}
+                        onChange={(e) => { playButtonClick(); onAutoCheckChange(e.target.checked); }}
                         className="peer sr-only"
                       />
                       <div className="w-4 h-4 rounded border-2 border-slate-600 bg-slate-800 peer-checked:bg-blue-500 peer-checked:border-blue-400 transition-all flex items-center justify-center">
-                        {autoCall && <span className="text-white text-[10px] font-bold"></span>}
+                        {autoCheck && <span className="text-white text-[10px] font-bold"></span>}
                       </div>
                     </div>
                     <span className="text-slate-300 text-[10px] group-hover:text-slate-100 transition-colors select-none">

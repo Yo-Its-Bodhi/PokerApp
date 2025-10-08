@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PlayerTimer from './PlayerTimer';
 import Card from './Card';
 import PotDisplay from './PotDisplay';
 import { getPlayerStateBorderClass } from './PlayerStateGlow';
 import ChipStack from './ChipStack';
 import { WinPopup } from './WinPopup';
+import ChipAnimation from './ChipAnimation';
+import ActionBox from './ActionBox';
 
 interface TableProps {
   players: any[];
@@ -67,6 +69,21 @@ const Table: React.FC<TableProps> = ({
 }) => {
   const [betAmount, setBetAmount] = useState(10000);
   const [raiseAmount, setRaiseAmount] = useState(20000);
+  
+  // Animation state
+  const [activeChipAnimation, setActiveChipAnimation] = useState<{
+    amount: number;
+    fromSeat: number;
+    isAllIn: boolean;
+  } | null>(null);
+  const [activeActionBox, setActiveActionBox] = useState<{
+    action: 'call' | 'raise' | 'check' | 'fold' | 'allin';
+    amount?: number;
+    playerName: string;
+    seat: number;
+  } | null>(null);
+  const [lastBetAmount, setLastBetAmount] = useState(0);
+  const [shouldPulsePot, setShouldPulsePot] = useState(false);
 
   // Theme-based table surface styles
   const tableStyles = {
@@ -101,6 +118,97 @@ const Table: React.FC<TableProps> = ({
   };
 
   const currentStyle = tableStyles[theme];
+  
+  // Track previous player states to detect actions
+  const prevPlayersRef = useRef(players);
+  const prevCurrentPlayerRef = useRef(currentPlayer);
+
+  // Auto-detect player actions and trigger animations
+  useEffect(() => {
+    const prevPlayers = prevPlayersRef.current;
+    const currentPlayers = players;
+
+    // Check if current player changed (action completed)
+    if (prevCurrentPlayerRef.current !== currentPlayer && prevCurrentPlayerRef.current !== 0) {
+      const prevActivePlayer = prevPlayers.find(p => p.seat === prevCurrentPlayerRef.current);
+      const currentActivePlayer = currentPlayers.find(p => p.seat === prevCurrentPlayerRef.current);
+      
+      if (prevActivePlayer && currentActivePlayer) {
+        // Detect what action happened by comparing states
+        let action = 'check';
+        let amount = 0;
+        
+        if (currentActivePlayer.folded && !prevActivePlayer.folded) {
+          action = 'fold';
+        } else if (currentActivePlayer.bet > prevActivePlayer.bet) {
+          amount = currentActivePlayer.bet - prevActivePlayer.bet;
+          if (currentActivePlayer.allIn) {
+            action = 'allin';
+          } else if (prevActivePlayer.bet === 0) {
+            action = 'bet';
+          } else {
+            action = 'raise';
+          }
+        } else if (currentActivePlayer.bet === prevActivePlayer.bet && currentActivePlayer.bet > 0) {
+          action = 'call';
+          amount = currentActivePlayer.bet;
+        }
+
+        // Trigger animation for the action
+        if (action !== 'check' && action !== 'fold') {
+          setActiveChipAnimation({
+            amount,
+            fromSeat: prevCurrentPlayerRef.current,
+            isAllIn: action === 'allin'
+          });
+          setLastBetAmount(amount);
+          setShouldPulsePot(true);
+        }
+
+        // Show action box
+        const playerName = currentActivePlayer.isMe ? 'You' : (currentActivePlayer.name || `Player ${currentActivePlayer.seat}`);
+        setActiveActionBox({
+          action: action as 'call' | 'raise' | 'check' | 'fold' | 'allin',
+          amount: amount > 0 ? amount : undefined,
+          playerName,
+          seat: prevCurrentPlayerRef.current
+        });
+      }
+    }
+
+    // Update refs
+    prevPlayersRef.current = currentPlayers;
+    prevCurrentPlayerRef.current = currentPlayer;
+  }, [players, currentPlayer]);
+
+  // Handle player actions with animations
+  const handleAnimatedAction = (action: string, amount?: number, seat?: number) => {
+    const targetSeat = seat || mySeat;
+    const player = players.find(p => p.seat === targetSeat);
+    const playerName = player?.isMe ? 'You' : (player?.name || `Player ${targetSeat}`);
+    
+    // Show action box
+    setActiveActionBox({
+      action: action as 'call' | 'raise' | 'check' | 'fold' | 'allin',
+      amount,
+      playerName,
+      seat: targetSeat
+    });
+    
+    // Animate chips if betting
+    if (amount && amount > 0) {
+      setActiveChipAnimation({
+        amount,
+        fromSeat: targetSeat,
+        isAllIn: action === 'allin'
+      });
+      setLastBetAmount(amount);
+      setShouldPulsePot(true);
+    }
+    
+    // Call original action handler
+    onAction(action, amount);
+  };
 
   return (
     <div className="w-full h-full">
@@ -116,7 +224,11 @@ const Table: React.FC<TableProps> = ({
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
           {/* Enhanced Pot Display */}
           <div className="mb-6">
-            <PotDisplay mainPot={pot} />
+            <PotDisplay 
+              mainPot={pot} 
+              lastBetAmount={lastBetAmount}
+              shouldPulse={shouldPulsePot}
+            />
           </div>
 
           {/* Community Cards */}
@@ -152,14 +264,14 @@ const Table: React.FC<TableProps> = ({
 
         {/* Betting Area - Chip stacks for current bets (positioned between players and pot) */}
         {players.filter(p => p && p.bet > 0).map((player) => {
-          // Position bet chips closer to center pot, in front of each player (moved up 1% for better centering)
+          // Position bet chips closer to center pot, in front of each player (moved up additional 3% total)
           const betPositions: {[key: number]: string} = {
-            1: 'bottom-36 left-1/2 -translate-x-1/2',  // Seat 1 - above player (was bottom-32)
-            2: 'bottom-44 left-24',                     // Seat 2 - towards center (was bottom-40)
-            3: 'top-[48%] left-20',                     // Seat 3 - towards center (was top-1/2)
-            4: 'top-36 left-1/2 -translate-x-1/2',     // Seat 4 - below player (was top-32)
-            5: 'top-[48%] right-20',                    // Seat 5 - towards center (was top-1/2)
-            6: 'bottom-44 right-24',                    // Seat 6 - towards center (was bottom-40)
+            1: 'bottom-48 left-1/2 -translate-x-1/2',  // Seat 1 - above player (moved up 3%)
+            2: 'bottom-56 left-24',                     // Seat 2 - towards center (moved up 3%)
+            3: 'top-[45%] left-20',                     // Seat 3 - towards center (moved up 3%)
+            4: 'top-24 left-1/2 -translate-x-1/2',     // Seat 4 - below player (moved up 3%)
+            5: 'top-[45%] right-20',                    // Seat 5 - towards center (moved up 3%)
+            6: 'bottom-56 right-24',                    // Seat 6 - towards center (moved up 3%)
           };
           
           return (
@@ -273,7 +385,19 @@ const Table: React.FC<TableProps> = ({
                           }}></div>
                           {/* Chip center */}
                           <div className="relative z-10 w-8 h-8 rounded-full bg-gradient-to-br from-yellow-200 to-yellow-400 border-2 border-yellow-700 flex items-center justify-center shadow-inner">
-                            <span className="text-yellow-900 font-black text-sm drop-shadow-md">D</span>
+                            {/* Card back logo */}
+                            <img 
+                              src="/card-back-icon.png" 
+                              alt="" 
+                              className="w-3/4 h-3/4 object-contain opacity-40"
+                              onError={(e) => {
+                                const currentTarget = e.currentTarget as HTMLImageElement;
+                                currentTarget.style.display = 'none';
+                                const fallback = currentTarget.nextElementSibling as HTMLElement;
+                                if (fallback) fallback.style.display = 'block';
+                              }}
+                            />
+                            <span className="text-yellow-900 font-black text-sm drop-shadow-md" style={{ display: 'none' }}>D</span>
                           </div>
                         </div>
                       </div>
@@ -289,7 +413,19 @@ const Table: React.FC<TableProps> = ({
                           }}></div>
                           {/* Chip center */}
                           <div className="relative z-10 w-7 h-7 rounded-full bg-red-600 border-2 border-white flex items-center justify-center">
-                            <span className="text-white font-black text-[10px]">SB</span>
+                            {/* Card back logo */}
+                            <img 
+                              src="/card-back-icon.png" 
+                              alt="" 
+                              className="w-3/4 h-3/4 object-contain opacity-60"
+                              onError={(e) => {
+                                const currentTarget = e.currentTarget as HTMLImageElement;
+                                currentTarget.style.display = 'none';
+                                const fallback = currentTarget.nextElementSibling as HTMLElement;
+                                if (fallback) fallback.style.display = 'block';
+                              }}
+                            />
+                            <span className="text-white font-black text-[10px]" style={{ display: 'none' }}>SB</span>
                           </div>
                         </div>
                       </div>
@@ -305,7 +441,19 @@ const Table: React.FC<TableProps> = ({
                           }}></div>
                           {/* Chip center */}
                           <div className="relative z-10 w-7 h-7 rounded-full bg-blue-600 border-2 border-white flex items-center justify-center">
-                            <span className="text-white font-black text-[10px]">BB</span>
+                            {/* Card back logo */}
+                            <img 
+                              src="/card-back-icon.png" 
+                              alt="" 
+                              className="w-3/4 h-3/4 object-contain opacity-60"
+                              onError={(e) => {
+                                const currentTarget = e.currentTarget as HTMLImageElement;
+                                currentTarget.style.display = 'none';
+                                const fallback = currentTarget.nextElementSibling as HTMLElement;
+                                if (fallback) fallback.style.display = 'block';
+                              }}
+                            />
+                            <span className="text-white font-black text-[10px]" style={{ display: 'none' }}>BB</span>
                           </div>
                         </div>
                       </div>
@@ -421,33 +569,55 @@ const Table: React.FC<TableProps> = ({
             mySeat === 5 ? 'top-1/3 right-60' :                      // Seat 5 - more spacing
             'bottom-24 right-64'                                     // Seat 6 - more spacing
           }`}>
-            <div className="flex gap-1.5">
+            <div className="relative flex" style={{ minWidth: '120px', overflow: 'visible' }}>
               {myCards && myCards.length > 0 ? (
                 myCards.map((card: any, i: number) => {
                   // Ensure card is treated as a number
                   const cardNum = typeof card === 'number' ? card : (typeof card === 'object' && card.card !== undefined ? card.card : 0);
                   const cardData = cardToString(cardNum);
+                  
+                  // Card fan effect: rotate and overlap (like reference images)
+                  const rotation = i === 0 ? -25 : 25;  // Left card -25°, right card +25°
+                  const translateX = i === 0 ? 15 : -15; // Cards overlap more naturally
+                  
                   return (
-                    <Card
-                      key={i}
-                      suit={cardData.suit}
-                      rank={cardData.rank}
-                      color={cardData.color}
-                      size="small"
-                      animationDelay={i * 0.1}
-                      faceDown={false}
-                      showFlipAnimation={false}
-                    />
+                      <Card
+                        suit={cardData.suit}
+                        rank={cardData.rank}
+                        color={cardData.color}
+                        size="small"
+                        animationDelay={i * 0.1}
+                        faceDown={false}
+                        showFlipAnimation={false}
+                        disableDealAnimation={true}
+                        style={{
+                          transform: `rotate(${rotation}deg) translateX(${translateX}px)`,
+                          transformOrigin: 'bottom center',
+                          zIndex: i === 0 ? 2 : 1,
+                        }}
+                      />
                   );
                 })
               ) : (
-                // Placeholder cards if no cards yet - Very dark blue
-                [0, 1].map((i) => (
-                  <div 
-                    key={i} 
-                    className="w-14 h-20 rounded-lg border-2 border-dashed border-blue-950/60 bg-blue-950/20 backdrop-blur-sm"
-                  ></div>
-                ))
+                // Placeholder cards if no cards yet - Fanned layout
+                [0, 1].map((i) => {
+                  const rotation = i === 0 ? -25 : 25;
+                  const translateX = i === 0 ? 15 : -15;
+                  
+                  return (
+                    <div
+                      key={i}
+                      className="relative"
+                      style={{
+                        transform: `rotate(${rotation}deg) translateX(${translateX}px)`,
+                        transformOrigin: 'bottom center',
+                        zIndex: i === 0 ? 2 : 1
+                      }}
+                    >
+                      <div className="w-14 h-20 rounded-lg border-2 border-dashed border-blue-950/60 bg-blue-950/20 backdrop-blur-sm"></div>
+                    </div>
+                  );
+                })
               )}
             </div>
           </div>
@@ -461,6 +631,26 @@ const Table: React.FC<TableProps> = ({
             seatNum={win.seat}
           />
         ))}
+
+        {/* Chip Animation Overlay */}
+        {activeChipAnimation && (
+          <ChipAnimation
+            {...activeChipAnimation}
+            onComplete={() => {
+              setActiveChipAnimation(null);
+              setShouldPulsePot(false);
+              setLastBetAmount(0);
+            }}
+          />
+        )}
+
+        {/* Action Box Overlay */}
+        {activeActionBox && (
+          <ActionBox
+            {...activeActionBox}
+            onComplete={() => setActiveActionBox(null)}
+          />
+        )}
       </div>
     </div>
   );
