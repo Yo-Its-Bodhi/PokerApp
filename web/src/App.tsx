@@ -2200,30 +2200,116 @@ function App() {
                         />
                       </div>
 
-                      <div className="p-6 pt-2">
+                      <div className="p-6 pt-2 max-h-[70vh] overflow-y-auto">
                         <h3 className="text-2xl font-black text-cyan-400 mb-3 text-center tracking-wider"
                             style={{ textShadow: '0 0 15px rgba(6, 182, 212, 0.8)' }}>
-                          Meet DAVE, Your Dealer
+                          🎴 Texas Hold'em Guide
                         </h3>
                         
-                        <div className="text-slate-300 text-sm leading-relaxed space-y-3 mb-4">
-                          <p>
-                            DAVE isn't just an AI. He's <span className="text-cyan-400 font-semibold">the AI</span>. 
-                            The one who somehow knows every poker rule, every side pot, and can track every last chip 
-                            like a silicon savant. Ask him how to split the blinds? Instant answer. Ask him about 
-                            quantum physics, or what day it is? He'll stare blankly into the void, maybe mumble 
-                            something about nachos.
-                          </p>
-                          
-                          <p>
-                            He's a genius in the casino, a complete idiot outside it. That's why we love him. 
-                            He's our dumb little robot with <span className="text-amber-400 font-semibold">all the poker answers</span>, 
-                            and absolutely no clue about life.
-                          </p>
+                        <div className="text-slate-300 text-sm leading-relaxed space-y-4">
+                          {/* How to Play */}
+                          <div>
+                            <h4 className="text-amber-400 font-bold mb-2 flex items-center gap-2">
+                              <span>🎯</span> How to Play
+                            </h4>
+                            <ul className="space-y-1 ml-4 text-xs">
+                              <li>• Each player gets 2 hole cards (face down)</li>
+                              <li>• 5 community cards are dealt face up</li>
+                              <li>• Make the best 5-card hand from your 7 cards</li>
+                              <li>• Best hand wins the pot (or split if tied)</li>
+                            </ul>
+                          </div>
+
+                          {/* Betting Rounds */}
+                          <div>
+                            <h4 className="text-amber-400 font-bold mb-2 flex items-center gap-2">
+                              <span>💰</span> Betting Rounds
+                            </h4>
+                            <ul className="space-y-1 ml-4 text-xs">
+                              <li>• <span className="text-cyan-400 font-semibold">Pre-Flop:</span> After hole cards dealt</li>
+                              <li>• <span className="text-cyan-400 font-semibold">Flop:</span> After first 3 community cards</li>
+                              <li>• <span className="text-cyan-400 font-semibold">Turn:</span> After 4th community card</li>
+                              <li>• <span className="text-cyan-400 font-semibold">River:</span> After 5th community card</li>
+                              <li>• <span className="text-cyan-400 font-semibold">Showdown:</span> Reveal hands, best wins</li>
+                            </ul>
+                          </div>
+
+                          {/* Actions */}
+                          <div>
+                            <h4 className="text-amber-400 font-bold mb-2 flex items-center gap-2">
+                              <span>🎲</span> Your Actions
+                            </h4>
+                            <ul className="space-y-1 ml-4 text-xs">
+                              <li>• <span className="text-green-400 font-semibold">Check:</span> Pass if no bet to call</li>
+                              <li>• <span className="text-cyan-400 font-semibold">Call:</span> Match current bet</li>
+                              <li>• <span className="text-yellow-400 font-semibold">Raise:</span> Increase the bet</li>
+                              <li>• <span className="text-red-400 font-semibold">Fold:</span> Give up your hand</li>
+                              <li>• <span className="text-purple-400 font-semibold">All-In:</span> Bet all your chips</li>
+                            </ul>
+                          </div>
+
+                          {/* Blinds & Dealer */}
+                          <div>
+                            <h4 className="text-amber-400 font-bold mb-2 flex items-center gap-2">
+                              <span>🎰</span> Blinds & Dealer
+                            </h4>
+                            <ul className="space-y-1 ml-4 text-xs">
+                              <li>• <span className="text-amber-400 font-semibold">Dealer Button (D):</span> Rotates clockwise each hand</li>
+                              <li>• <span className="text-cyan-400 font-semibold">Small Blind (SB):</span> Left of dealer, posts half bet</li>
+                              <li>• <span className="text-cyan-400 font-semibold">Big Blind (BB):</span> Left of SB, posts full bet</li>
+                              <li>• Blinds ensure there's always money in the pot</li>
+                              <li>• Action starts left of BB pre-flop</li>
+                            </ul>
+                          </div>
+
+                          {/* Hand Rankings */}
+                          <div>
+                            <h4 className="text-amber-400 font-bold mb-2 flex items-center gap-2">
+                              <span>👑</span> Hand Rankings (Best to Worst)
+                            </h4>
+                            <ul className="space-y-1 ml-4 text-xs">
+                              <li>1. <span className="text-purple-400 font-bold">Royal Flush:</span> A-K-Q-J-10 same suit 👑💎</li>
+                              <li>2. <span className="text-blue-400 font-bold">Straight Flush:</span> 5 consecutive, same suit 🌊💎</li>
+                              <li>3. <span className="text-cyan-400 font-bold">Four of a Kind:</span> 4 same rank cards 🏠🏠</li>
+                              <li>4. <span className="text-green-400 font-bold">Full House:</span> 3 of a kind + pair 🏠</li>
+                              <li>5. <span className="text-yellow-400 font-bold">Flush:</span> 5 cards same suit 🌊</li>
+                              <li>6. <span className="text-orange-400 font-bold">Straight:</span> 5 consecutive cards 📏</li>
+                              <li>7. <span className="text-red-400 font-bold">Three of a Kind:</span> 3 same rank 🎯</li>
+                              <li>8. <span className="text-indigo-400 font-bold">Two Pair:</span> 2 pairs 👥</li>
+                              <li>9. <span className="text-slate-400 font-bold">Pair:</span> 2 same rank cards 👫</li>
+                              <li>10. <span className="text-slate-500 font-bold">High Card:</span> Highest card wins 🎴</li>
+                            </ul>
+                          </div>
+
+                          {/* Kickers */}
+                          <div>
+                            <h4 className="text-amber-400 font-bold mb-2 flex items-center gap-2">
+                              <span>🃏</span> Kickers (Tie Breakers)
+                            </h4>
+                            <ul className="space-y-1 ml-4 text-xs">
+                              <li>• If same hand type, highest cards win</li>
+                              <li>• Example: A-A-K beats A-A-Q (K kicker wins)</li>
+                              <li>• Best 5 cards total determine winner</li>
+                            </ul>
+                          </div>
+
+                          {/* Tips */}
+                          <div className="border-t border-slate-700 pt-3">
+                            <h4 className="text-green-400 font-bold mb-2 flex items-center gap-2">
+                              <span>💡</span> Pro Tips
+                            </h4>
+                            <ul className="space-y-1 ml-4 text-xs">
+                              <li>• Position matters - later is better</li>
+                              <li>• Watch opponent betting patterns</li>
+                              <li>• Don't play every hand - be selective</li>
+                              <li>• Pot odds: Is calling worth the potential win?</li>
+                              <li>• Bluffing works, but don't overdo it</li>
+                            </ul>
+                          </div>
                         </div>
 
-                        <div className="text-center text-xs text-slate-500 italic border-t border-slate-700 pt-3">
-                          More from Dave Coming Soon...
+                        <div className="text-center text-xs text-slate-500 italic border-t border-slate-700 pt-3 mt-4">
+                          Good luck at the tables! 🍀
                         </div>
                       </div>
                     </div>
@@ -2257,7 +2343,7 @@ function App() {
                                transition-opacity duration-300 pointer-events-none whitespace-nowrap">
                   <div className="bg-black/90 text-cyan-400 text-xs font-bold px-3 py-2 rounded-lg border border-cyan-400/50"
                        style={{ textShadow: '0 0 10px rgba(6, 182, 212, 0.8)' }}>
-                    Ask DAVE 🤖
+                    Poker Rules 📖
                   </div>
                 </div>
               </button>
@@ -2300,30 +2386,116 @@ function App() {
                             />
                           </div>
 
-                          <div className="p-6 pt-2">
+                          <div className="p-6 pt-2 max-h-[70vh] overflow-y-auto">
                             <h3 className="text-2xl font-black text-cyan-400 mb-3 text-center tracking-wider"
                                 style={{ textShadow: '0 0 15px rgba(6, 182, 212, 0.8)' }}>
-                              Meet DAVE, Your Dealer
+                              🎴 Texas Hold'em Guide
                             </h3>
                             
-                            <div className="text-slate-300 text-sm leading-relaxed space-y-3 mb-4">
-                              <p>
-                                DAVE isn't just an AI. He's <span className="text-cyan-400 font-semibold">the AI</span>. 
-                                The one who somehow knows every poker rule, every side pot, and can track every last chip 
-                                like a silicon savant. Ask him how to split the blinds? Instant answer. Ask him about 
-                                quantum physics, or what day it is? He'll stare blankly into the void, maybe mumble 
-                                something about nachos.
-                              </p>
-                              
-                              <p>
-                                He's a genius in the casino, a complete idiot outside it. That's why we love him. 
-                                He's our dumb little robot with <span className="text-amber-400 font-semibold">all the poker answers</span>, 
-                                and absolutely no clue about life.
-                              </p>
+                            <div className="text-slate-300 text-sm leading-relaxed space-y-4">
+                              {/* How to Play */}
+                              <div>
+                                <h4 className="text-amber-400 font-bold mb-2 flex items-center gap-2">
+                                  <span>🎯</span> How to Play
+                                </h4>
+                                <ul className="space-y-1 ml-4 text-xs">
+                                  <li>• Each player gets 2 hole cards (face down)</li>
+                                  <li>• 5 community cards are dealt face up</li>
+                                  <li>• Make the best 5-card hand from your 7 cards</li>
+                                  <li>• Best hand wins the pot (or split if tied)</li>
+                                </ul>
+                              </div>
+
+                              {/* Betting Rounds */}
+                              <div>
+                                <h4 className="text-amber-400 font-bold mb-2 flex items-center gap-2">
+                                  <span>💰</span> Betting Rounds
+                                </h4>
+                                <ul className="space-y-1 ml-4 text-xs">
+                                  <li>• <span className="text-cyan-400 font-semibold">Pre-Flop:</span> After hole cards dealt</li>
+                                  <li>• <span className="text-cyan-400 font-semibold">Flop:</span> After first 3 community cards</li>
+                                  <li>• <span className="text-cyan-400 font-semibold">Turn:</span> After 4th community card</li>
+                                  <li>• <span className="text-cyan-400 font-semibold">River:</span> After 5th community card</li>
+                                  <li>• <span className="text-cyan-400 font-semibold">Showdown:</span> Reveal hands, best wins</li>
+                                </ul>
+                              </div>
+
+                              {/* Actions */}
+                              <div>
+                                <h4 className="text-amber-400 font-bold mb-2 flex items-center gap-2">
+                                  <span>🎲</span> Your Actions
+                                </h4>
+                                <ul className="space-y-1 ml-4 text-xs">
+                                  <li>• <span className="text-green-400 font-semibold">Check:</span> Pass if no bet to call</li>
+                                  <li>• <span className="text-cyan-400 font-semibold">Call:</span> Match current bet</li>
+                                  <li>• <span className="text-yellow-400 font-semibold">Raise:</span> Increase the bet</li>
+                                  <li>• <span className="text-red-400 font-semibold">Fold:</span> Give up your hand</li>
+                                  <li>• <span className="text-purple-400 font-semibold">All-In:</span> Bet all your chips</li>
+                                </ul>
+                              </div>
+
+                              {/* Blinds & Dealer */}
+                              <div>
+                                <h4 className="text-amber-400 font-bold mb-2 flex items-center gap-2">
+                                  <span>🎰</span> Blinds & Dealer
+                                </h4>
+                                <ul className="space-y-1 ml-4 text-xs">
+                                  <li>• <span className="text-amber-400 font-semibold">Dealer Button (D):</span> Rotates clockwise each hand</li>
+                                  <li>• <span className="text-cyan-400 font-semibold">Small Blind (SB):</span> Left of dealer, posts half bet</li>
+                                  <li>• <span className="text-cyan-400 font-semibold">Big Blind (BB):</span> Left of SB, posts full bet</li>
+                                  <li>• Blinds ensure there's always money in the pot</li>
+                                  <li>• Action starts left of BB pre-flop</li>
+                                </ul>
+                              </div>
+
+                              {/* Hand Rankings */}
+                              <div>
+                                <h4 className="text-amber-400 font-bold mb-2 flex items-center gap-2">
+                                  <span>👑</span> Hand Rankings (Best to Worst)
+                                </h4>
+                                <ul className="space-y-1 ml-4 text-xs">
+                                  <li>1. <span className="text-purple-400 font-bold">Royal Flush:</span> A-K-Q-J-10 same suit 👑💎</li>
+                                  <li>2. <span className="text-blue-400 font-bold">Straight Flush:</span> 5 consecutive, same suit 🌊💎</li>
+                                  <li>3. <span className="text-cyan-400 font-bold">Four of a Kind:</span> 4 same rank cards 🏠🏠</li>
+                                  <li>4. <span className="text-green-400 font-bold">Full House:</span> 3 of a kind + pair 🏠</li>
+                                  <li>5. <span className="text-yellow-400 font-bold">Flush:</span> 5 cards same suit 🌊</li>
+                                  <li>6. <span className="text-orange-400 font-bold">Straight:</span> 5 consecutive cards 📏</li>
+                                  <li>7. <span className="text-red-400 font-bold">Three of a Kind:</span> 3 same rank 🎯</li>
+                                  <li>8. <span className="text-indigo-400 font-bold">Two Pair:</span> 2 pairs 👥</li>
+                                  <li>9. <span className="text-slate-400 font-bold">Pair:</span> 2 same rank cards 👫</li>
+                                  <li>10. <span className="text-slate-500 font-bold">High Card:</span> Highest card wins 🎴</li>
+                                </ul>
+                              </div>
+
+                              {/* Kickers */}
+                              <div>
+                                <h4 className="text-amber-400 font-bold mb-2 flex items-center gap-2">
+                                  <span>🃏</span> Kickers (Tie Breakers)
+                                </h4>
+                                <ul className="space-y-1 ml-4 text-xs">
+                                  <li>• If same hand type, highest cards win</li>
+                                  <li>• Example: A-A-K beats A-A-Q (K kicker wins)</li>
+                                  <li>• Best 5 cards total determine winner</li>
+                                </ul>
+                              </div>
+
+                              {/* Tips */}
+                              <div className="border-t border-slate-700 pt-3">
+                                <h4 className="text-green-400 font-bold mb-2 flex items-center gap-2">
+                                  <span>💡</span> Pro Tips
+                                </h4>
+                                <ul className="space-y-1 ml-4 text-xs">
+                                  <li>• Position matters - later is better</li>
+                                  <li>• Watch opponent betting patterns</li>
+                                  <li>• Don't play every hand - be selective</li>
+                                  <li>• Pot odds: Is calling worth the potential win?</li>
+                                  <li>• Bluffing works, but don't overdo it</li>
+                                </ul>
+                              </div>
                             </div>
 
-                            <div className="text-center text-xs text-slate-500 italic border-t border-slate-700 pt-3">
-                              More from Dave Coming Soon...
+                            <div className="text-center text-xs text-slate-500 italic border-t border-slate-700 pt-3 mt-4">
+                              Good luck at the tables! 🍀
                             </div>
                           </div>
                         </div>
@@ -2357,7 +2529,7 @@ function App() {
                                    transition-opacity duration-300 pointer-events-none whitespace-nowrap">
                       <div className="bg-black/90 text-cyan-400 text-xs font-bold px-3 py-2 rounded-lg border border-cyan-400/50"
                            style={{ textShadow: '0 0 10px rgba(6, 182, 212, 0.8)' }}>
-                        Ask DAVE 🤖
+                        Poker Rules 📖
                       </div>
                     </div>
                   </button>

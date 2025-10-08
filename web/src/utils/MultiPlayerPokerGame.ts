@@ -1067,20 +1067,28 @@ export class MultiPlayerPokerGame {
       const activePlayers = this.state.players.filter(p => !p.folded);
       console.log('[showdown] Active players:', activePlayers.length);
     
-    // Evaluate all hands
-    let bestHand: any = null;
-    let winners: Player[] = [];
+    // Evaluate all hands using pokersolver's proper comparison
+    const playerHands: { player: Player; hand: any; formattedCards: string[] }[] = [];
 
     for (const player of activePlayers) {
       const allCards = [...(player.cards || []), ...this.state.communityCards];
       const formattedCards = this.cardsToPokersolverFormat(allCards);
       const hand = Hand.solve(formattedCards);
+      playerHands.push({ player, hand, formattedCards });
+    }
 
-      if (!bestHand || hand.rank > bestHand.rank) {
-        bestHand = hand;
-        winners = [player];
-      } else if (hand.rank === bestHand.rank) {
-        winners.push(player);
+    // Use pokersolver's winners() method - it properly compares hands including kickers!
+    const allHands = playerHands.map(ph => ph.hand);
+    const winningHands = Hand.winners(allHands);
+    
+    // Find which players have the winning hands
+    const winners: Player[] = [];
+    let bestHand: any = null;
+    
+    for (const ph of playerHands) {
+      if (winningHands.includes(ph.hand)) {
+        winners.push(ph.player);
+        bestHand = ph.hand;
       }
     }
 

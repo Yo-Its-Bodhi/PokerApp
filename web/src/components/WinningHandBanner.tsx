@@ -59,7 +59,7 @@ const WinningHandBanner: React.FC<WinningHandBannerProps> = ({
 
   return (
     <div
-      className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[100] 
+      className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[100] 
         transition-all duration-500 ease-out pointer-events-none
         ${isShowing && visible ? 'opacity-100 scale-100 winner-celebration' : 'opacity-0 scale-95'}`}
     >
